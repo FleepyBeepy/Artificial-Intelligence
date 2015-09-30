@@ -1,0 +1,185 @@
+<HTML>
+  <HEAD>
+    <TITLE>Map representations</TITLE>
+<LINK REL=start HREF="http://theory.stanford.edu/~amitp/GameProgramming/index.html" />
+<LINK REL=author HREF="mailto:amitp@cs.stanford.edu" /><LINK REL=prev HREF="http://theory.stanford.edu/~amitp/GameProgramming/References.html" />
+<LINK REL=next HREF="http://theory.stanford.edu/~amitp/GameProgramming/Goals.html" />
+
+<STYLE><!--
+
+  BODY { background: rgb(235,235,235); color: black; margin: 0; padding: 0; }
+  H1 { color: white; background-color: rgb(0,0,192);
+       padding: 5pt; border: 1px solid rgb(235,235,235);
+       text-align: center; font-size: 24px; font-weight: bold; 
+       text-transform: capitalize; margin: none; }
+  H2 { margin-left: 2em; color: rgb(0,0,255); }
+  H3 { margin-left: 5em; color: rgb(0,0,192); }
+  H4 { margin-left: 7em; color: rgb(0,0,128); }
+  H5 { margin-left: 10em; color: rgb(0,0,64); }
+  H1, H2, H3, H4, H5, P.nav { font-weight: bold;
+       font-family: verdana, sans-serif; }
+  TABLE.nav { margin-top: 3em; background-color: white; }
+  ADDRESS { text-align: right; }
+  BLOCKQUOTE { margin-left: 20%; margin-right: 20%; 
+               background: rgb(192,192,192); border: none; }
+  P, DIV.content { margin-left: 7em; 
+              margin-right: 7em; text-align: justify; }
+  OL LI { list-style-type: decimal; }
+  OL OL LI { list-style-type: lower-alpha; }
+  OL OL OL LI { list-style-type: lower-roman; }
+  DIV.margin { width: 30%; float: right; background: white; 
+               border: solid 10pt rgb(235,235,235);
+               text-align: center; padding: 1ex; }
+  DIV.margin HR { display: none; }
+  DIV.figure { margin-left: 0em; text-align: center; }
+  A:link { color: #003399; font-style: italic; }
+  A:visited { color: #990066; }
+  A:link:hover { color: #ffffff; background-color: #003399;
+  text-decoration: none; }
+  A:visited:hover { color: #ffffff; background-color: #990066;
+  text-decoration: none; }
+// --></STYLE>
+  </HEAD>
+<BODY BGCOLOR=#e8e8e8 TEXT=black LINK=blue VLINK=#600060 ALINK=red>
+
+<h1>Map representations</h1>
+
+<h2><A NAME=S1>Flat</A></h2>
+
+<P>A flat map has but one level in its representation.  It's rare for
+games to have only one level -- often there is a "tile" level and then
+a "sub-tile" level in which objects can move within a tile.  However,
+it's common for <EM>path-finding</EM> to occur on only one of the
+levels.</P>
+
+<h2><A NAME=S2>Hierarchal</A></h2>
+
+<P>A hierarchal map has many levels in its representation.  A
+heterogenous hierarchy typically has a fixed number of levels, each
+with different characteristics.  Ultima VI, for example, has a "world"
+map, on which are cities and dungeons.  You can enter a city or
+dungeon and be in a second map level.  In addition, there are "layers"
+of worlds on top of one another, making for a three-level hierarchy.
+A homogeneous hierarchy has an arbitrary number of levels, each with
+the same characteristics.  Quad trees and oct trees can be considered
+to be homogeneous hierarchies.</P>
+
+<P>In a hierarchal map, path-finding may occur on several levels.  For
+example, if a 1024x1024 world was divided into 64x64 "zones", it may
+be reasonable to find a path from the player's location to the edge of
+the zone, then from zone to zone until reaching the desired zone, then
+from the edge of that zone to the desired location.  At the coarser
+levels, long paths can be found more easily because the path-finder
+does not consider all of the details.  When the player actually walks
+across each zone, the path-finder can be invoked again to find a short
+path through that zone.  By keeping the problem size small, the
+path-finder can run quicker.</P>
+
+<h2><A NAME=S6>Non-grid path-finding</A></h2>
+
+<P>Through most of this document I've assumed that A* was being used on a
+grid of some sort, where the "nodes" given to A* were grid locations
+and the "edges" were directions you could travel from a grid location.
+However, A* was designed to work with arbitrary graphs, not only
+grids.  </P>
+
+<h3><A NAME=S7>Polygonal maps</A></h3>
+
+<P>One form of graph that you may want to use if your game does not have
+terrain, and has polygonal obstacles, is based on "navigation points".</P>
+
+<DIV CLASS=figure><IMG width=400 height=300 SRC=polygon_graph.png ALT=""></DIV>
+
+<P>In this diagram, I've marked the corners of every obstacle with a blue
+dot.  In addition, the start and end points are blue dots.  These
+navigation points are the nodes to feed to A*.  In addition, A* needs
+to know which points are connected.  To determine this, look at each
+pair and decide whether the straight line between the two points is
+unobstructed.  In this diagram, these edges are the light blue lines.
+The third piece of information A* needs is distances between the
+points.  Depending on how your units move, that can be <A HREF="Heuristics.html#S1">manhattan distance</A>, <A HREF="Heuristics.html#S2">diagonal grid distance</A>, or <A HREF="Heuristics.html#S3">straight line distance</A>.  </P>
+
+<P>A* will then consider paths from navigation point to navigation point.
+The dotted green line is one such path.  This is <EM>much</EM> faster
+than looking for paths from grid point to grid point, as you have only
+<CODE>2 + 4*(#obstacles)</CODE> navigation points, instead of <CODE>xsize *
+ysize</CODE> grid locations.  When there are no obstacles in the way, A*
+will do very well -- the start point and end point will be connected
+by an edge, and A* will find that path immediately, without expanding
+any other navigation points.  Even when there are obstacles to
+consider, A* will jump from corner to corner until it finds the best
+path, which will still be much faster than looking for a path from a
+grid location to another.</P>
+
+<h3><A NAME=S8>Road maps</A></h3>
+
+<P>If your units can only move on roads, you may want to consider giving
+A* the road and intersection information.  Each intersection will be a
+node in the graph, and each road will be an edge.  A* will find paths
+from intersection to intersection, which is typically much faster than
+exploring all possible directions, one grid space at a time.  To save
+time, build the node/edge graph ahead of time instead of when you run
+A*.</P>
+
+<P>For some applications, your units may not start and end on
+intersections.  To handle this case, each time you run A*, you will
+need to modify the node/edge graph.  Add the starting and ending
+points as new nodes, and add edges between these points and their
+nearest intersections.  After path-finding, remove these extra nodes
+and edges from the graph so that the graph is ready to be used for the
+next invocation of A*.</P>
+
+<DIV CLASS=figure><IMG width=400 height=300 SRC=road_graph.png ALT=""></DIV>
+
+<P>In this diagram, the intersections are blue circles.  In addition, the
+start and end points are blue circles.  These are the nodes in the
+graph for A*.  The edges are the roads between the nodes, and these
+edges should be given the driving distance along each road (shown in
+black text).</P>
+
+<P>In the "roads as edges" framework, you can incorporate one-way roads as
+unidirectional edges in the graph.  </P>
+
+<P>If you want to assign costs to turning, you can extend the framework a
+bit: instead of nodes being locations, consider nodes to be a
+&lt;location, direction&gt; pair (a point in <EM>state space</EM>),
+where the direction indicates what direction you were facing when you
+<EM>arrived</EM> at that location.  Replace edges from X to Y with edges
+from &lt;X, dir&gt; to &lt;Y, dir&gt; to represent a straight drive, and from &lt;X,
+dir1&gt; to &lt;X, dir2&gt; to represent a "turn".  Each edge represents <EM>either</EM> a straight drive or a turn, but not both.  You can then assign
+costs to the edges representing turns.</P>
+
+<P>If you also need to take into account turn limitations, such as "only
+right turns", you can use a variation of this framework in which the
+two types of edges are always combined.  Each edge represents an
+optional turn followed by a straight drive.  In this framework, you
+can represent restrictions like "you can only turn right": include an
+edge from &lt;X, north&gt; to &lt;Y, north&gt; for driving straight,
+and an edge from &lt;X, north&gt; to &lt;Z, east&gt; for the right
+turn followed by a drive, but <EM>don't</EM> include &lt;X, north&gt; to
+anything west, because that would mean a left turn, and don't include
+anything south, because that would mean a U-turn.  </P>
+
+<P>In this framework, you can model a large city downtown, in which you
+have one-way streets, turn restrictions at certain intersections
+(often prohibiting U-turns and sometimes prohibiting left turns), and
+turn costs (to model slowing down and waiting for pedestrians before
+you turn right).  Compared to grid maps, A* can find paths in road
+graphs environment fairly quickly, because there are few choices to
+make at each graph node, and there are relatively few nodes in the
+map.</P>
+
+
+
+<TABLE CLASS=nav WIDTH="100%" CELLPADDING=3>
+<TR><TD ALIGN=LEFT WIDTH="33%">Back: <A REL=prev HREF="References.html">References</A></TD><TD ALIGN=CENTER WIDTH="33%">Up: <A HREF=index.html>Home</A></TD><TD ALIGN=RIGHT WIDTH="33%">Next: <A REL=next HREF="Goals.html">Goals</A></TD></TR>
+</TABLE>
+
+
+<HR><ADDRESS>
+</address>
+<TABLE WIDTH=100%><TR><TD ALIGN=LEFT>Last modified: Sun Nov 18 11:32:17 2001<br>From <A HREF="http://www-cs-students.stanford.edu/~amitp/gameprog.html">Amit's Game Programming Site</A></TD><TD ALIGN=RIGHT>Copyright (C) 2000, <A REL=copyright HREF="http://www-cs-students.stanford.edu/~amitp/">Amit J. Patel</A></TD></TR></TABLE>
+
+
+</BODY>
+</HTML>

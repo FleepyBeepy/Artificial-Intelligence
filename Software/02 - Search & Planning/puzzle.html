@@ -1,0 +1,138 @@
+<html>
+<title>Sliding Puzzle applet</title>
+
+<body bgcolor=white background=/images/grid.100.gif alink=#ffffc0>
+
+
+
+<h1>Sliding Puzzle</h1>
+
+This applet constructs a sliding puzzle based on an image provided. To move a tile into the empty space, click on the tile to be moved.
+
+<p>
+<applet code=SlidingPuzzle2ech.class width=300 height=360 codebase=http://www.ericharshbarger.org/java/slidingpuzzle/ archive=SlidingPuzzle2.jar>
+<param name=BGCOLOR value="255,255,255">
+<param name=COPYRIGHT value="SlidingPuzzle applet, Copyright 1998, Eric Harshbarger">
+<param name=AUTHOR value="Eric Harshbarger, http://www.ericharshbarger.org">
+<param name=ROWS value="4">
+<param name=COLUMNS value="3">
+<param name=IMAGE value="http://www.ericharshbarger.org/java/slidingpuzzle/anime.gif">
+<param name=SOUND.CLICK value="http://www.ericharshbarger.org/java/slidingpuzzle/click2.au">
+<param name=SOUND.SOLVED value="http://www.ericharshbarger.org/java/slidingpuzzle/glissant1.au">
+</applet>
+<br>
+<small>The applet was made by Eric Harshbarger, the anime image was not.</small>
+<p>
+
+<h2>Downloading</h2>
+The applet may be downloaded for free by clicking on the TAR-file link below (<a href=/cgi-bin/j.cgi?faq.html#tar>read the FAQ</a> if you're not sure what to do with a TAR file).
+The FAQ also has <a href=/cgi-bin/j.cgi?faq.html#embed>step by step instructions on how to embed an applet into your own webpage</a>.
+While I do not require any payment for the use of these applets at The Applet Depot, if you find them to be extraordinarily useful on your own
+website, I'd encourage you to make a modest donation (like, $1 or 2 per applet used) to my <a href=https://www.paypal.com/us/cgi-bin/webscr?cmd=_transaction-run target=new>Paypal account</a> (send any contributions to 'eric@ericharshbarger.org').
+<p>
+
+
+<a href=/java/slidingpuzzle/SlidingPuzzle2.tar>SlidingPuzzle2.tar</a>
+
+<p>
+Once unTARed, you should find the following classes (plus a '.jar' file if you want to use the <tt>archive=</tt> attribute in the &lt;applet&gt; tag):
+
+
+<ul>
+<li>AppletUtil3.class
+<li>SlidingPuzzle2ech.class
+<li>SPCanvas2.class
+</ul>
+
+</ul>
+
+<h2>Parameters</h2>
+Below are descriptions of all the parameters you may use to customize the applets to your webpages. Be sure to enclose any parameters that contain white space in double-quotation marks. Most parameters have default values in case you do not specify your own values, but the first two parameters (AUTHOR and COPYRIGHT) are <i>necessary</i>. If you are not sure how to incorporate an applet into a webpage (with its parameter names and values), looks at the source of this webpage and the applet embedded for an example, or <a href=/cgi-bin/j.cgi?faq.html#embed>read the FAQ page</a>.
+<p>
+
+
+
+<li><b>AUTHOR:</b> This parameter <i>must</i> appear <i>exactly</i> as follows:
+<pre>
+&lt;param name=AUTHOR value="Eric Harshbarger, http://www.ericharshbarger.org"&gt;
+</pre>
+<p>
+
+
+
+<li><b>COPYRIGHT:</b> This parameter <i>must</i> appear <i>exactly</i> as follows:
+<pre>
+&lt;param name=COPYRIGHT value="SlidingPuzzle applet, Copyright 1998, Eric Harshbarger"&gt;</pre>
+<p>
+
+
+
+<li><b>BGCOLOR:</b> This parameter indicates the background color of the applet. <a href=/cgi-bin/j.cgi?faq.html#colors>Consult the FAQ page</a> if you are unsure what format to use for the parameter's value.
+<p>
+
+
+
+<li><b>FGCOLOR:</b> This parameter indicates the foreground color of the applet. <a href=/cgi-bin/j.cgi?faq.html#colors>Consult the FAQ page</a> if you are unsure what format to use for the parameter's value.
+<p>
+
+
+
+<li><b>FONTNAME:</b> This value indicates the fontface used by the applet. Java1.0.2 has the following values from which to choose (must be spelled exactly): TimesRoman, Dialog, Courier, Helvetica, DialogInput, Symbol.
+<p>
+
+<li><b>FONTSIZE:</b> This value indicates the size of the font used by the applet.
+<p>
+
+<li><b>FONTSTYLE:</b> This value indicates the style of the font used by the applet. The value should be one of the following: plain, bold, italic, bolditalic.
+<p>
+
+
+
+<li><b>IMAGE:</b> This parameter points to an image file which will form the basis of the puzzle. Be sure to <a href=/cgi-bin/j?faq.html#images>guidelines about images</a> on the FAQ page.
+<p>
+
+<li><b>COLUMNS:</b> This indicates the number of columns the image will be divided into when the puzzle pieces are created.
+<p>
+
+<li><b>ROWS:</b> This indicates the number of rows the image will be divided into when the puzzle pieces are created.
+<p>
+
+<li><b>SOUND.CLICK:</b> This parameter points to a sound file which is played whenever a tile is moved. Be sure to <a href=/cgi-bin/j?faq.html#sounds>read the FAQ section of sound files</a>. The default is that no sound is used.
+<p>
+
+<li><b>SOUND.SOLVED:</b> This parameter points to a sound file which is played whenever the puzzle is solved. Be sure to <a href=/cgi-bin/j?faq.html#sounds>read the FAQ section of sound files</a>. The default is that no sound is used.
+
+
+<br clear=all>
+<hr>
+<a href=http://www.ericharshbarger.com/java/>APPLET DEPOT</a>:
+
+<a href=/cgi-bin/j.cgi?introduction.html>INTRO</a>
+-
+<a href=/cgi-bin/j.cgi?news.html>NEWS</a>
+-
+<a href=/cgi-bin/j.cgi?applets.html>APPLETS</a>
+-
+<a href=/cgi-bin/j.cgi?demos.html>DEMOS</a>
+-
+<a href=/cgi-bin/j.cgi?custom.html>CUSTOM</a>
+-
+<a href=/cgi-bin/j.cgi?faq.html>FAQ</a>
+-
+<a href=/cgi-bin/j?faq.html>EMAIL</a>
+
+<hr>
+<small>The Applet Depot and all associated applets, text, scripts, and images, Copyright &copy; 1998-2002 by <a href=http://www.ericharshbarger.org/ target=_top>Eric Harshbarger</a> unless otherwise noted. 'Java' is a registered trademark of Sun Microsystems Incorporated.</small>
+<hr>
+
+<applet code=SiteMap2ech.class width=90 height=30 codebase="/java/sitemap/" archive=SiteMap2.jar>
+<param name=AUTHOR value="Eric Harshbarger, http://www.ericharshbarger.org">
+<param name=COPYRIGHT value="SiteMap applet, Copyright 1998, Eric Harshbarger">
+<param name=MAPFILE value="/java/sitemap/sitemap.txt">
+<param name=BACKGROUND value="/java/sitemap/sitemap2a.gif">
+<param name=FOREGROUND value="/java/sitemap/sitemap2b.gif">
+</applet>  
+
+
+</body>
+</html>

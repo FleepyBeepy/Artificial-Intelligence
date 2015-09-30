@@ -1,0 +1,122 @@
+<HTML>
+  <HEAD>
+    <TITLE>User experience with shortest paths</TITLE>
+<LINK REL=start HREF="http://theory.stanford.edu/~amitp/GameProgramming/index.html" />
+<LINK REL=author HREF="mailto:amitp@cs.stanford.edu" /><LINK REL=prev HREF="http://theory.stanford.edu/~amitp/GameProgramming/MovementCosts.html" />
+<LINK REL=next HREF="http://theory.stanford.edu/~amitp/GameProgramming/Applications.html" />
+
+<STYLE><!--
+
+  BODY { background: rgb(235,235,235); color: black; margin: 0; padding: 0; }
+  H1 { color: white; background-color: rgb(0,0,192);
+       padding: 5pt; border: 1px solid rgb(235,235,235);
+       text-align: center; font-size: 24px; font-weight: bold; 
+       text-transform: capitalize; margin: none; }
+  H2 { margin-left: 2em; color: rgb(0,0,255); }
+  H3 { margin-left: 5em; color: rgb(0,0,192); }
+  H4 { margin-left: 7em; color: rgb(0,0,128); }
+  H5 { margin-left: 10em; color: rgb(0,0,64); }
+  H1, H2, H3, H4, H5, P.nav { font-weight: bold;
+       font-family: verdana, sans-serif; }
+  TABLE.nav { margin-top: 3em; background-color: white; }
+  ADDRESS { text-align: right; }
+  BLOCKQUOTE { margin-left: 20%; margin-right: 20%; 
+               background: rgb(192,192,192); border: none; }
+  P, DIV.content { margin-left: 7em; 
+              margin-right: 7em; text-align: justify; }
+  OL LI { list-style-type: decimal; }
+  OL OL LI { list-style-type: lower-alpha; }
+  OL OL OL LI { list-style-type: lower-roman; }
+  DIV.margin { width: 30%; float: right; background: white; 
+               border: solid 10pt rgb(235,235,235);
+               text-align: center; padding: 1ex; }
+  DIV.margin HR { display: none; }
+  DIV.figure { margin-left: 0em; text-align: center; }
+  A:link { color: #003399; font-style: italic; }
+  A:visited { color: #990066; }
+  A:link:hover { color: #ffffff; background-color: #003399;
+  text-decoration: none; }
+  A:visited:hover { color: #ffffff; background-color: #990066;
+  text-decoration: none; }
+// --></STYLE>
+  </HEAD>
+<BODY BGCOLOR=#e8e8e8 TEXT=black LINK=blue VLINK=#600060 ALINK=red>
+
+<h1>User experience with shortest paths</h1>
+
+<P>What's most important in the game is the user.  You want the user to
+have fun!  You don't want him (or her) to feel like the computer is
+cheating, or that the game units aren't behaving properly.  </P>
+
+<h2><A NAME=S1>Dumb Movement</A></h2>
+
+<P>If the path-finding doesn't work well, the user will end up moving the
+units manually.  <EM>Avoid this!</EM> In Civilization, the rules for
+the game allowed for zero-cost movement along railroads.  However, the
+pathfinder had a non-zero movement cost.  The result was that users
+avoided using the pathfinder, and instead moved units manually on the
+railroads.  In Command and Conquer, units could get stuck in "U"
+shaped traps (see <A HREF="WalkingTraps.html">the section on
+walking traps</A>) so users would have to guide the units manually.  A
+dumb pathfinder will annoy your users and make them move units
+themselves, so make your pathfinder decent!</P>
+
+<h2><A NAME=S2>Smart Movement</A></h2>
+
+<P>Making units too smart is almost as bad as making units too dumb.  If
+the player has to deal with fog of war but the pathfinder has access
+to the entire map, the units will mysteriously know where to go even
+though the user does not.  That's a clear sign to the user that
+something odd is going on.  On the other hand, it gives better paths.
+A compromise is to scale up the movement costs on unexplored areas.
+For example, if your normal movement costs are 1 for grass, 3 for
+forest, and 7 for mountains, set them differently on unexplored areas:
+5 for grass, 6 for forest, 7 for mountains.  The unit will take
+mountains vs. grass into account, but not too much; it'll just be a
+subtle hint.  Raising costs for moving through unexplored areas will
+also tend to make the unit stay in explored territory as much as
+possible.  You might want to do the opposite for "scout" units: they
+should <EM>prefer</EM> unexplored areas.</P>
+
+<P>Try to keep your units balanced between too dumb and too smart.  The
+goal should be to make it match what the user might have done to move
+the unit around.</P>
+
+<h2><A NAME=S3>Multithreading</A></h2>
+
+<P>You can use multithreading to improve the user experience.  When a
+unit needs a path, allow it to start moving in a straight line towards
+the goal, and add a request to a pathfinding queue.  In another (low
+priority) thread, pull requests off the queue and find paths.  Your
+units will start moving immediately, so the user won't be left
+wondering if something is wrong, and you won't have a high CPU load
+(which will slow down the rest of the game) while the path is being
+calculated.</P>
+
+<h2><A NAME=S4>Multiple Units</A></h2>
+
+<P>If your game allows multiple units in a group to move together, try to
+make the movement look interesting.  You can find a single path for
+them all to follow, and then have them all follow the path
+individually, but this will lead to either a line of units or units
+trying to pass each other.  Instead, vary the paths a little so that
+they can walk in parallel.  Alternatively, pick one "leader" unit to
+move along the path and have the other units use a separately
+programmed "follow" behavior.  This following could be as simple as
+moving towards the leader but stay some distance away, or it could be
+as involved as <A HREF="http://www.red.com/cwr/boids.html">flocking</A>.</P>
+
+
+
+<TABLE CLASS=nav WIDTH="100%" CELLPADDING=3>
+<TR><TD ALIGN=LEFT WIDTH="33%">Back: <A REL=prev HREF="MovementCosts.html">Movement Costs</A></TD><TD ALIGN=CENTER WIDTH="33%">Up: <A HREF=index.html>Home</A></TD><TD ALIGN=RIGHT WIDTH="33%">Next: <A REL=next HREF="Applications.html">Applications</A></TD></TR>
+</TABLE>
+
+
+<HR><ADDRESS>
+</address>
+<TABLE WIDTH=100%><TR><TD ALIGN=LEFT>Last modified: Sun Nov 18 11:32:17 2001<br>From <A HREF="http://www-cs-students.stanford.edu/~amitp/gameprog.html">Amit's Game Programming Site</A></TD><TD ALIGN=RIGHT>Copyright (C) 2000, <A REL=copyright HREF="http://www-cs-students.stanford.edu/~amitp/">Amit J. Patel</A></TD></TR></TABLE>
+
+
+</BODY>
+</HTML>

@@ -1,0 +1,444 @@
+<HTML>
+  <HEAD>
+    <TITLE>Implementation Notes</TITLE>
+<LINK REL=start HREF="http://theory.stanford.edu/~amitp/GameProgramming/index.html" />
+<LINK REL=author HREF="mailto:amitp@cs.stanford.edu" /><LINK REL=prev HREF="http://theory.stanford.edu/~amitp/GameProgramming/AStarComparison.html" />
+<LINK REL=next HREF="http://theory.stanford.edu/~amitp/GameProgramming/MovingObstacles.html" />
+
+<STYLE><!--
+
+  BODY { background: rgb(235,235,235); color: black; margin: 0; padding: 0; }
+  H1 { color: white; background-color: rgb(0,0,192);
+       padding: 5pt; border: 1px solid rgb(235,235,235);
+       text-align: center; font-size: 24px; font-weight: bold; 
+       text-transform: capitalize; margin: none; }
+  H2 { margin-left: 2em; color: rgb(0,0,255); }
+  H3 { margin-left: 5em; color: rgb(0,0,192); }
+  H4 { margin-left: 7em; color: rgb(0,0,128); }
+  H5 { margin-left: 10em; color: rgb(0,0,64); }
+  H1, H2, H3, H4, H5, P.nav { font-weight: bold;
+       font-family: verdana, sans-serif; }
+  TABLE.nav { margin-top: 3em; background-color: white; }
+  ADDRESS { text-align: right; }
+  BLOCKQUOTE { margin-left: 20%; margin-right: 20%; 
+               background: rgb(192,192,192); border: none; }
+  P, DIV.content { margin-left: 7em; 
+              margin-right: 7em; text-align: justify; }
+  OL LI { list-style-type: decimal; }
+  OL OL LI { list-style-type: lower-alpha; }
+  OL OL OL LI { list-style-type: lower-roman; }
+  DIV.margin { width: 30%; float: right; background: white; 
+               border: solid 10pt rgb(235,235,235);
+               text-align: center; padding: 1ex; }
+  DIV.margin HR { display: none; }
+  DIV.figure { margin-left: 0em; text-align: center; }
+  A:link { color: #003399; font-style: italic; }
+  A:visited { color: #990066; }
+  A:link:hover { color: #ffffff; background-color: #003399;
+  text-decoration: none; }
+  A:visited:hover { color: #ffffff; background-color: #990066;
+  text-decoration: none; }
+// --></STYLE>
+  </HEAD>
+<BODY BGCOLOR=#e8e8e8 TEXT=black LINK=blue VLINK=#600060 ALINK=red>
+
+<h1>Implementation Notes</h1>
+
+<h2><A NAME=S1>Sketch</A></h2>
+
+<P>I won't describe the implementation in detail here, but you can look
+in an AI book or at another web page that has a description.  See the
+<A HREF="References.html">references section</A> for a list of books.
+Essentially, there is a set of nodes (map locations and a cost) called
+OPEN and another set called CLOSED.  Each time through the main loop,
+you pick out the best element from OPEN (where "best" means "the one
+with the lowest cost"), and you look at its neighbors.  You then put
+any unvisited neighbors into the OPEN set.  The cost of a node is the
+sum of the current cost of walking from the start to that node and the
+heuristic estimate of the cost from that node to the goal.</P>
+
+<h2><A NAME=S2>Source code</A></h2>
+
+<P>My own C++ A* code is available: <A HREF="path.cpp">path.cpp</A> and <A HREF="path.h">path.h</A>.  There is also an older (slower, but easier to
+understand) version of my code, as well as many other implementations
+of A*, on <A HREF="http://www.gameai.com/ai.html">Steve Woodcock's
+Games AI Page</A>.</P>
+
+<h2><A NAME=S3>Performance tips</A></h2>
+
+<P>A lot of people don't know why their A* implementation is so slow, and
+ask on <CODE>rec.games.programmer</CODE> or <CODE>comp.ai.games</CODE>.  The most
+common reasons are:</P>
+
+<h3><A NAME=S4>Bad heuristic</A></h3>
+
+<P>For example, on a grid map, you should have a heuristic that
+reflects the actual movement costs along normal directions and
+diagonals.  If your game doesn't allow diagonal movement, you
+probably want <CODE>abs(dx)+abs(dy)</CODE>.  If it does, you
+probably want <CODE>max(abs(dx),abs(dy))</CODE>.</P>
+
+<P>This is counterintuitive -- it makes the most sense to have a
+"true" distance heuristic.  A*, however, is comparing the
+<CODE>g</CODE> values (actual movement costs) to <CODE>h</CODE>
+values (heuristic).  If these two don't match, or if they aren't
+at the same scale, A* may give bad paths or may search too much.</P>
+
+<P>The problem with this heuristic is that it gives you path that <EM>look</EM> bad, even if they aren't <EM>really</EM> bad!  To remedy this, add
+a small (around 1% of the heuristic) penalty when the node isn't near
+the straight-line path from the start to the goal.  Also see <A HREF="Heuristics.html">the Heuristics section</A> of this document for more
+information.</P>
+
+<h3><A NAME=S5>Slow priority queue</A></h3>
+
+<P>What's the first thing you'll think of using for these two sets?  If
+you're like me, you probably thought "array".  You may have thought
+"linked list", too.  The problem is that finding the best node out of
+an array or list is slow.  Lists and arrays are very general.
+Usually, more specific data structures can outperform general data
+structures.  For A*, we do not need the flexibility of a list (fast
+insertion and deletion anywhere), nor do we need the flexibility of an
+array (fast access to any element).  Instead, we want two operations:
+<STRONG>insert</STRONG> and <STRONG>delete best</STRONG>.  (Actually, we need a third;
+see the note below.)</P>
+
+<h4><A NAME=S6>Heaps</A></h4>
+
+<P>For these operations, what you really should have is a <A HREF="http://priority-queues.webhop.org/">priority queue</A>.  These
+can be implemented in a variety of ways, including balanced binary
+trees, skip lists, and splay trees.  My favorite is with <EM>heaps</EM>.
+Heaps are easy to implement, and they are stored in an array, which is
+pretty efficient.  I use <STRONG>STL</STRONG>'s efficient implementation of
+heaps for my code.  I get speed <EM>and</EM> I don't have to code up and
+test a heap data structure.  An example set of numbers: if you have
+1,000 nodes in your OPEN set, then inserting into and removing from a
+sorted list takes an average of 500 comparisons and 2 moves; for an
+unsorted list it takes 1000 comparisons and 2 moves; for a sorted
+array it takes 500 comparisons and 500 moves; for a heap it takes 10
+comparisons and 10 moves.  That's approximately a <STRONG>factor of
+100</STRONG> faster.  However, these are worst case values.  More
+realistically, with 1000 nodes in the set, you should expect heaps to
+be 25% faster than linked lists, and for 1500 nodes in the set, you
+should expect heaps to be 50% faster.  The more nodes you have, the
+faster the heap will be relative to an array or list.</P>
+
+<P>It is important to keep in mind that we are not merely looking for
+asymptotice ("big O") behavior.  We also want to look for a low
+constant.  To see why, consider an algorithm that is O(log N) and
+another that is O(N), where N is the number of elements in the heap.
+It may be that on your machine, an implementation of the first
+algorithm takes 10,000 * log(N) seconds, while an implementation of
+the second one takes 2 * N seconds.  For N = 256, the first would take
+80,000 seconds and the second would take 512 seconds.  The "faster"
+algorithm takes more time in this case, and would only start to be
+faster when N &gt; 200,000.</P>
+
+<P><EM>You cannot merely compare two algorithms.</EM>  You should also
+compare the implementations of those algorithms.  You also have to
+know what size your data might be.  In the above example, the first
+implementation is faster for N &gt; 200,000, but if in your game, N stays
+under 30,000, then the second implementation would have been better.</P>
+
+<P>A friend of mine (who does research in data structures for
+shortest-path algorithms) says that heaps are good unless you have
+more than 10,000 elements in your heap.  Unless your game's map is
+extremely large, you probably don't need a more complicated data
+structure (like <A HREF="http://www-cs-students.stanford.edu/~csilvers/">multi-level buckets</A>).  You should probably <A HREF="http://www.star-lab.com/goldberg/pub/neci-tr-96-062.ps">stay
+away from Fibonacci heaps</A>, which have good asymptotic performance but
+have slow implementations unless N is huge.</P>
+
+<P><STRONG>Important Note</STRONG> for anyone using heaps: Unlike Dijkstra's
+Algorithm, A* requires that you determine whether the new node you are
+examining is already in the OPEN set, and if it is, whether it is
+better than the one in the OPEN set, and if it is better, then the one
+in the OPEN set must be adjusted.  The problem is that when using
+heaps, it is difficult to find a particular node in the heap -- it
+requires a search through the entire heap, which is slow.  To avoid
+this expensive search, my A* code has a "Marking" array to help it
+answer the two questions above.  To avoid the first question (whether
+something is in the OPEN set), the Marking array keeps track of which
+map locations are in the OPEN and CLOSED sets.  To avoid the second
+question (whether the new node is better than the old one), the
+Marking array keeps track of the <CODE>g</CODE> values at each node.  Only
+if both questions are answered "yes" does my code invoke Find (which I
+call <CODE>find_in_open</CODE>).  Experiments suggest that for most
+searches in my game, one of the two questions will be answered "no"
+most of the time, so almost all the calls to Find are eliminated when
+using the Marking array.</P>
+
+<h4><A NAME=S7>Splay Trees</A></h4>
+
+<P>Heaps are a tree-based structure with expected O(log N) time
+operations.  However, the problem is that with A*, the common behavior
+is that you have a low cost node that is removed (causing O(log N)
+behavior, since values have to move up from the very bottom of the
+tree) followed by low cost nodes that are added (cuasing O(log N)
+behavior, since these values are added at the bottom and bubble up to
+the very top).  The <EM>expected case</EM> behavior of heaps here is
+equivalent to the <EM>worst case</EM> behavior.  We may be able to do
+better if we find a data structure where <EM>expected case</EM> is
+better, even if the <EM>worst case</EM> is no better.</P>
+
+<P>Splay trees are a self adjusting tree structure.  Any access to a node
+in the tree tends to bring that node up to the top.  The result is a
+"caching" effect, where rarely used nodes go to the bottom and don't
+slow down operations.  It doesn't matter how big your splay tree is,
+because your operations are only as slow as your "cache size".  In A*,
+the low cost nodes are used a lot, and the high cost nodes aren't used
+for a long time, so those high cost nodes can move to the bottom of
+the tree.</P>
+
+<h4><A NAME=S8>HOT Queues</A></h4>
+
+<P>There's another good data structure that may be better than heaps.
+Often, you can restrict the range of values that would be in the
+priority queue.  Given a restricted range, there are often better
+algorithms.  For example, sorting can be done on arbitrary values in
+O(N log N) time, but when there is a fixed range it can be done in
+O(N) time.</P>
+
+<P>We can use <A HREF="http://www.star-lab.com/goldberg/pub/neci-tr-97-104.ps">HOT Queues</A>
+(Heap On Top queues) to take advantage of a particular property of A*
+and Dijkstra's algorithms: when we are removing nodes with value <CODE>f</CODE>, the nodes we insert have value <CODE>f + delta</CODE> where <CODE>delta
+&lt;= C</CODE>.  (Note however that <CODE>delta &gt;= 0</CODE> only if your heuristic is
+admissible, and this technique is not as useful if you use an
+inadmissible heuristic.)  The constant <CODE>C</CODE> is the <EM>maximum</EM>
+change in cost from one point to an adjacent point.  We can therefore
+keep "buckets" that store some subset of the values (just like we do
+in the O(N) sorting algorithms), and in the most important bucket we
+can use a heap.  For example, if there are ten buckets, then the heap
+only contains (on average) one tenth of the values, so it runs faster
+than using a heap for all of them.  In addition, we do not organize
+the other nine tenths of the elements unless they are actually needed.</P>
+
+<P>In A*, we often put nodes into OPEN that we never actually need.  HOT
+Queues are a big win because the elements that are not needed are
+inserted in O(1) time.  Only elements that are needed get heapified
+(which is not too expensive).  The only operation that is more than
+O(1) is node deletion from the heap, which is O(log N) but remember
+that the queue is small, so it's not as bad as you'd expect.  </P>
+
+<P>In addition, if <CODE>C</CODE> is small, we do not even need a heap for the
+smallest bucket, so insertion and deletion are both O(1) time!
+(Compare this to heaps, which have insertions and deletions take O(log
+N) time.)  One person reported that HOT queues are as fast as heaps
+for at most 800 nodes in the OPEN set, and are 20% faster when there
+are at most 1500 nodes.  I would expect that HOT queues get faster as
+the number of nodes increases.</P>
+
+<h2><A NAME=S9>Variations of A*</A></h2>
+
+<h3><A NAME=S10>Beam search</A></h3>
+
+<P>In the main A* loop, the OPEN set stores all the nodes that may need
+to be searched to find a path.  The <STRONG>Beam Search</STRONG> is a
+variation of A* that places a limit on the size of the OPEN set.  If
+the set becomes too large, the node with the worst chances of giving a
+good path is dropped.  One drawback is that you have to keep your set
+sorted to do this; a priority queue implementation may not work well.
+(HOT queues would work, though.)  On the other hand, sorting it is not
+much slower than a priority queue, and it may help so much to be able
+to drop nodes that it pays for the extra overhead of sorting.  (Note
+that you don't do a full sort every time you add a node to the list;
+you only need to place the new node in the right place, which can be
+done in logarithmic time.  Inserting into a priority queue is also
+logarithmic.  It's just that priority queues can have a lower constant
+factor associated with the costs.)</P>
+
+<h3><A NAME=S11>Iterative deepening</A></h3>
+
+<P>Iterative Deepening is used in many AI algorithms to start with an
+approximate answer, then make it more accurate.  The name comes from
+game tree searches, where you look some number of moves ahead (for
+example, in Chess).  You can try to deepen the tree by looking ahead
+more moves.  Once your answer doesn't change or improve much, you
+assume that you have a pretty good answer, and it won't improve when
+you try to make it more accurate again.  In ID-A*, the "depth" is a
+cutoff for <CODE>f</CODE> values.  When the <CODE>f</CODE> value is too large, the
+node won't even be considered (<EM>i.e.,</EM> it won't be added to the
+OPEN set).  The first time through you process very few nodes.  Each
+subsequent pass, you increase the number of nodes you visit.  If you
+find that the path improves, then you continue to increase the cutoff;
+otherwise, you can stop.  For more details, read <A HREF="http://www.apl.jhu.edu/~hall/AI-Programming/IDA-Star.html">these
+lecture nodes on ID-A*</A>.</P>
+
+<P>I personally don't see much need for ID-A* in <EM>games</EM>.  ID
+algorithms tend to increase computation time while reducing memory
+requirements.  In games, however, the "nodes" are very small -- they
+are simply coordinates.  I don't see a big win from not storing those
+nodes.  As for processing time, although lists, arrays, and heaps are
+affected by a large number of nodes added to the OPEN set, <A HREF="index.html">HOT queues</A> can be used to avoid using any CPU time for
+handling nodes with high <CODE>f</CODE> values.</P>
+
+<h3><A NAME=S12>Dynamic weighting</A></h3>
+
+<P>With dynamic weighting, you assume that at the beginning of your
+search, it's more important to get (anywhere) quickly; at the
+end of the search, it's more important to get to the goal.</P>
+
+<BLOCKQUOTE>
+<CODE>f(p) = g(p) + w(p) * h(p)</CODE>
+
+</BLOCKQUOTE>
+
+<P>Here, there is a weight (<CODE>w &gt;= 1</CODE>) associated with the heuristic.
+As you get closer to the goal, you decrease the weight; this decreases
+the importance of the heuristic, and increases the relative importance
+of the actual cost of the path.</P>
+
+<h3><A NAME=S13>Bandwidth search</A></h3>
+
+<P>There are two properties about <EM>Bandwidth Search</EM> that some
+people may find useful.  This variation assumes that <CODE>h</CODE> is
+an <EM>overestimate</EM>, but that it doesn't overestimate by more than
+some number <CODE>e</CODE>.  If this is the case in your search, then
+the path you get will have a cost that doesn't exceed the best path's
+cost by more than <CODE>e</CODE>.  Once again, the better you make
+your heuristic, the better your solution will be.</P>
+
+<P>Another property you get is that if you can drop some nodes in the
+OPEN set.  Whenever <CODE>h+d</CODE> is greater then the true cost of
+the path (for some <CODE>d</CODE>), you can drop any node that has an
+<CODE>f</CODE> value that's at least <CODE>e+d</CODE> higher than the
+<CODE>f</CODE> value of the best node in OPEN.  This is a strange
+property.  You have a "band" of good values for <CODE>f</CODE>;
+everything outside this band can be dropped, because there is a
+guarantee that it will not be on the best path.</P>
+
+<P>Curiously, you can use different heuristics for the two properties,
+and things still work out.  You can use one heuristic to guarantee
+that your path isn't too bad, and another one to determine what to
+drop in the OPEN set.</P>
+
+<h3><A NAME=S14>Bidirectional search</A></h3>
+
+<P>Instead of searching from the start to the finish, you can start two
+searches in parallel -- one from start to finish, and one from finish
+to start.  When they meet, you should have a good path.</P>
+
+<P>This sounds like a good idea, but I don't think it'll give you very
+much.  The idea behind bidirectional searches is that searching
+results in a `tree' that fans out over the map.  A big tree is much
+worse than two small trees, so it's better to have two small search
+trees.  With A*, however, my experiments suggest that you <EM>don't</EM>
+get a tree.  You get a path that has nearby map areas explored, but it
+doesn't fan out like Dijkstra's algorithm.  In fact, that's what makes
+A* so fast -- no matter how long your path is, it doesn't search like
+crazy, unless the path really is crazy.  It tends to search only small
+areas of the map.  Bidirectional search may be more useful if your map
+is complex.</P>
+
+<P>The <EM>front-to-front</EM> variation links the two searches together.
+Instead of choosing the best forward-search node---<CODE>g(start,x) +
+h(x,goal)</CODE>---or the best backward-search node---<CODE>g(y,goal) +
+h(start,y)</CODE>---this algorithm chooses a pair of nodes with the best <CODE>g(start,x) + h(x,y) + g(y,goal)</CODE>.</P>
+
+<P>The <EM>retargeting</EM> approach abandons simultaneous searches in the
+forward and backward directions.  Instead, it performs a forward
+search for a short time, chooses the best forward candidate, and then
+performs a backward search---not to the starting point, but to that
+candidate.  After a while, it chooses a best backward candidate and
+performs a forward search from the best forward candidate to the best
+backward candidate.  This process continues until the two candidates
+are the same point.</P>
+
+<h3><A NAME=S15>Hierarchical A*</A></h3>
+
+<P>Path-Finding algorithms tend to be worse than <EM>linear</EM>: if you
+double the distance needed to travel, it takes <EM>more</EM> than twice
+as long to find the path.  You can think of path-finding as searching
+some area like a circle --- when the circle's diameter doubles, it has
+<EM>four</EM> times the area.</P>
+
+<P>One way to reduce the problem is to have multiple levels of searching.
+For example, to get from your home to a location in another city, you
+would find a path from your chair to your car, from the car to the
+street, from the street to a freeway, from the freeway to the edge of
+the city, from there to the other city, then to a street, to a parking
+lot, and finally to the door of the destination building.  There are
+several levels of searching here:</P>
+
+<DIV class=content><UL>
+<li>At the <EM>street</EM> level, you are concerned with walking
+    from one location to a nearby location, but you do not go out
+    on the street.
+<li>At the <EM>city</EM> level, you go from one street to another
+    until you find the freeway.  You do not worry about going into
+    buildings or parking lots, nor do you worry about going on freeways.
+<li>At the <EM>state</EM> level, you go from one city to another
+    on the freeway.  You do not worry about streets within cities
+    until you get to your destination city.
+</UL>
+
+</DIV>
+
+<P>Dividing the problem into levels allows you to ignore most of your
+choices.  When moving from city to city, it is quite tedious to
+consider every street in every city along the way.  Instead, you
+ignore them all, and only consider freeways.  The problem becomes
+small and manageable, and solving it becomes fast.</P>
+
+<P>You can use multiple levels with graph-searching algorithms such as
+A*.  One paper on this topic is <A HREF="http://www.csi.uottawa.ca/~holte/Publications/tr-95-18.ps">Hierarchical A*: Searching Abstraction Hierarchies Efficiently</A>.  You
+do not need to use the same algorithm at each level.  See <A HREF="index.html">the section about splines</A> for an example of
+using a path-finding algorithm at one level (from tile to tile) and a
+simple spline drawing algorithm at the lower level (from pixel to
+pixel).</P>
+
+<P>A similar approach is to use varying resolution.  First, plot a path
+with low resolution.  As you get closer to a point, refine the path
+with a higher resolution.  This approach can be used with <A HREF="index.html">path splicing</A> to avoid moving obstacles.</P>
+
+<h3><A NAME=S16>Dynamic A*</A></h3>
+
+<P>My impression of Dynamic A* (D*) was that it was good for robots but
+not necessarily for games.  D* is intended for use when you don't have
+complete information.  If you don't have all the information, A* can
+make mistakes; D*'s contribution is that it can correct those mistakes
+without taking much time.
+ 
+A* assumes you have all the information at the beginning, and then
+gives you a path to follow.  D*'s does not require complete
+information at the beginning -- instead, you give it what you know,
+and it gives you a path.  When you learn more, D* will make
+improvements to the path.  D* solves a different problem than A*.
+ 
+D* never does <EM>worse</EM> than A*.  If you have all the information
+at the beginning, they produce the same path.  If you do not have all
+the information, they initially produce the same path but D* improves
+it, so its path is better than the one A* produces.
+ 
+<EM>However</EM>, D* requires a lot of space -- essentially you run A*
+and keep around its internal information (<CODE>OPEN/CLOSED</CODE> sets,
+path tree, <CODE>g</CODE> values), and then when the map changes, D* will
+tell you if you need to adjust your path to take into account the map
+changes.
+ 
+For a game with more than one unit, you usually don't want to keep all
+that information around, so D* can't really be used.  It was designed
+for robotics, where there is just one robot -- you don't need to reuse
+the memory for some other robot's path.  If your game has only one or
+a small number of units, you may want to investigate D*.</P>
+
+<DIV class=content><UL>
+<li><A HREF="http://www.frc.ri.cmu.edu/~axs/dynamic_plan.html">Overview</A>
+<li><A HREF="http://www.frc.ri.cmu.edu/~axs/doc/icra94.ps">Paper 1</A>
+<li><A HREF="http://www.frc.ri.cmu.edu/~axs/doc/ijcai95.ps">Paper 2</A>
+</UL>
+
+</DIV>
+
+
+
+<TABLE CLASS=nav WIDTH="100%" CELLPADDING=3>
+<TR><TD ALIGN=LEFT WIDTH="33%">Back: <A REL=prev HREF="AStarComparison.html">Introduction</A></TD><TD ALIGN=CENTER WIDTH="33%">Up: <A HREF=index.html>Home</A></TD><TD ALIGN=RIGHT WIDTH="33%">Next: <A REL=next HREF="MovingObstacles.html">Moving Obstacles</A></TD></TR>
+</TABLE>
+
+
+<HR><ADDRESS>
+</address>
+<TABLE WIDTH=100%><TR><TD ALIGN=LEFT>Last modified: Sun Nov 18 11:32:17 2001<br>From <A HREF="http://www-cs-students.stanford.edu/~amitp/gameprog.html">Amit's Game Programming Site</A></TD><TD ALIGN=RIGHT>Copyright (C) 2000, <A REL=copyright HREF="http://www-cs-students.stanford.edu/~amitp/">Amit J. Patel</A></TD></TR></TABLE>
+
+
+</BODY>
+</HTML>

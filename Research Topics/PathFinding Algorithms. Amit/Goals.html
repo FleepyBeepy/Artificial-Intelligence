@@ -1,0 +1,153 @@
+<HTML>
+  <HEAD>
+    <TITLE>Long and short term goals</TITLE>
+<LINK REL=start HREF="http://theory.stanford.edu/~amitp/GameProgramming/index.html" />
+<LINK REL=author HREF="mailto:amitp@cs.stanford.edu" /><LINK REL=prev HREF="http://theory.stanford.edu/~amitp/GameProgramming/MapRepresentations.html" />
+<LINK REL=next HREF="http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html" />
+
+<STYLE><!--
+
+  BODY { background: rgb(235,235,235); color: black; margin: 0; padding: 0; }
+  H1 { color: white; background-color: rgb(0,0,192);
+       padding: 5pt; border: 1px solid rgb(235,235,235);
+       text-align: center; font-size: 24px; font-weight: bold; 
+       text-transform: capitalize; margin: none; }
+  H2 { margin-left: 2em; color: rgb(0,0,255); }
+  H3 { margin-left: 5em; color: rgb(0,0,192); }
+  H4 { margin-left: 7em; color: rgb(0,0,128); }
+  H5 { margin-left: 10em; color: rgb(0,0,64); }
+  H1, H2, H3, H4, H5, P.nav { font-weight: bold;
+       font-family: verdana, sans-serif; }
+  TABLE.nav { margin-top: 3em; background-color: white; }
+  ADDRESS { text-align: right; }
+  BLOCKQUOTE { margin-left: 20%; margin-right: 20%; 
+               background: rgb(192,192,192); border: none; }
+  P, DIV.content { margin-left: 7em; 
+              margin-right: 7em; text-align: justify; }
+  OL LI { list-style-type: decimal; }
+  OL OL LI { list-style-type: lower-alpha; }
+  OL OL OL LI { list-style-type: lower-roman; }
+  DIV.margin { width: 30%; float: right; background: white; 
+               border: solid 10pt rgb(235,235,235);
+               text-align: center; padding: 1ex; }
+  DIV.margin HR { display: none; }
+  DIV.figure { margin-left: 0em; text-align: center; }
+  A:link { color: #003399; font-style: italic; }
+  A:visited { color: #990066; }
+  A:link:hover { color: #ffffff; background-color: #003399;
+  text-decoration: none; }
+  A:visited:hover { color: #ffffff; background-color: #990066;
+  text-decoration: none; }
+// --></STYLE>
+  </HEAD>
+<BODY BGCOLOR=#e8e8e8 TEXT=black LINK=blue VLINK=#600060 ALINK=red>
+
+<h1>Long and short term goals</h1>
+
+<P>I've concentrated on the task of finding paths from one place to
+another.  However, a lower level question is: once I have a path, how
+do I move along it?  The most obvious answer is moving in a straight
+line from one location to the next.  However, you might also want to
+move in a curve, or have multiple levels of movement.  You may want to
+treat the locations as a low-priority goal from which you deviate.  A
+higher level question is: where do you want to go?  Unless you first
+answer the higher level question, path-finding is not very useful.
+Certainly, one form of goal setting is asking the user to click on the
+destination.  However, you may have automated tasks as
+well---exploring, spying, attacking, and building are common ones.</P>
+
+<h2><A NAME=S1>Unit Movement</A></h2>
+
+<P>I've concentrated on path-finding, which reduces the problem of moving
+from one location to another with the many smaller problems of moving
+from one space to an adjacent space.</P>
+
+<P>You could move in a straight line from one location to the next but
+there are alternatives.  Consider the four movement paths on this
+diagram:</P>
+
+<DIV CLASS=figure><IMG width=400 height=300 SRC=splines.png ALT=""></DIV>
+
+<P>The red path is the standard approach: move from the center of one
+square to the center of the next.  The green path is somewhat better:
+move in straight lines between the <EM>edges</EM> between the tiles,
+instead of the center of the tiles.  You might also try moving in
+straight lines between the <EM>corners</EM> of tiles.  The blue paths
+use splines, with dark blue being low order splines and light blue
+being a higher order spline (which takes longer to compute).</P>
+
+<P>Lines between corners and edges of tiles will be the shortest
+solution.  However, the splines can make your units seem less
+mechanical and more "alive".  Gamedev has an <A HREF="http://www.gamedev.net/reference/programming/features/cubicsplines/page2.asp">article about splines for movement</A>.</P>
+
+<P>If your units cannot turn easily, you may want to take that into
+account when plotting a movement path.  Craig Reynolds has a great
+page about <A HREF="http://www.red.com/cwr/steer/">steering</A> that has a paper
+about steering and Java applets demonstrating various behaviors.  If
+you have more than one unit moving along a path, you may also want to
+investigate <A HREF="http://www.red.com/cwr/boids.html">flocking</A>.  Craig
+recommends that instead of treating paths as a list of places your
+unit must visit, you treat paths as ``a guideline, from which you
+deviate reactively as conditions require.''</P>
+
+<h2><A NAME=S2>Behavior flags or stacks</A></h2>
+
+<P>Your units may have more than one goal.  For example, you may
+have a general goal like "spying" but also a more immediate goal like
+"go to the enemy headquarters".  In addition, there may be temporary
+goals like "avoid that patrol guard".  Here are some ideas for goals:</P>
+
+<DIV class=content><UL>
+<li><STRONG>Stop</STRONG>: Stay in the current location
+<li><STRONG>Stay</STRONG>: Stay in one area
+<li><STRONG>Flee</STRONG>: Move to a safe area
+<li><STRONG>Retreat</STRONG>: Move to a safe area, while fighting off enemy units
+<li><STRONG>Explore</STRONG>: Find and learn about areas for which little
+    information is known
+<li><STRONG>Wander</STRONG>: Move around aimlessly
+<li><STRONG>Search</STRONG>: Look for a particular object
+<li><STRONG>Spy</STRONG>: Go near an object or unit to learn more about
+    it, without being seen
+<li><STRONG>Patrol</STRONG>: Repeatedly walk through an area to make sure
+    no enemy units go through it
+<li><STRONG>Defend</STRONG>: Stay near some object or unit to keep enemy
+    units away
+<li><STRONG>Guard</STRONG>: Stay near the entrance to some area to keep
+    enemy units out
+<li><STRONG>Attack</STRONG>: Move to some object or unit to capture or
+    destroy it
+<li><STRONG>Surround</STRONG>: With other units, try to surround an
+    enemy unit or object
+<li><STRONG>Shun</STRONG>: Move away from some object or unit
+<li><STRONG>Avoid</STRONG>: Stay away from any other units
+<li><STRONG>Follow</STRONG>: Stay near some unit as it moves around
+<li><STRONG>Group</STRONG>: Seek and form groups of units
+<li><STRONG>Work</STRONG>: Perform some task like mining, farming, or collecting
+</UL>
+
+</DIV>
+
+<P>For each unit you can have a flag indicating which behavior it is to
+perform.  To have multiple levels, keep a <EM>behavior stack</EM>.  The
+top of the stack will be the most immediate goal and the bottom of the
+stack will be the overall goal.  When you need to do something new but
+later want to go back to what you were doing, push a new behavior on
+the stack.  If you instead need to do something new but <EM>don't</EM>
+want to go back to the old behavior, clear the stack.  Once you are
+done with some goal, pop it from the stack and start performing the
+next behavior on the stack.</P>
+
+
+
+<TABLE CLASS=nav WIDTH="100%" CELLPADDING=3>
+<TR><TD ALIGN=LEFT WIDTH="33%">Back: <A REL=prev HREF="MapRepresentations.html">Map representations</A></TD><TD ALIGN=CENTER WIDTH="33%">Up: <A HREF=index.html>Home</A></TD><TD ALIGN=RIGHT WIDTH="33%">Next: <A REL=next HREF="Heuristics.html">Heuristics</A></TD></TR>
+</TABLE>
+
+
+<HR><ADDRESS>
+</address>
+<TABLE WIDTH=100%><TR><TD ALIGN=LEFT>Last modified: Sun Nov 18 11:32:17 2001<br>From <A HREF="http://www-cs-students.stanford.edu/~amitp/gameprog.html">Amit's Game Programming Site</A></TD><TD ALIGN=RIGHT>Copyright (C) 2000, <A REL=copyright HREF="http://www-cs-students.stanford.edu/~amitp/">Amit J. Patel</A></TD></TR></TABLE>
+
+
+</BODY>
+</HTML>

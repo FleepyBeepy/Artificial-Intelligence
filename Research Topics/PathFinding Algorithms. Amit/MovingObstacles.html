@@ -1,0 +1,252 @@
+<HTML>
+  <HEAD>
+    <TITLE>Dealing with moving obstacles</TITLE>
+<LINK REL=start HREF="http://theory.stanford.edu/~amitp/GameProgramming/index.html" />
+<LINK REL=author HREF="mailto:amitp@cs.stanford.edu" /><LINK REL=prev HREF="http://theory.stanford.edu/~amitp/GameProgramming/ImplementationNotes.html" />
+<LINK REL=next HREF="http://theory.stanford.edu/~amitp/GameProgramming/SpeedComparison.html" />
+
+<STYLE><!--
+
+  BODY { background: rgb(235,235,235); color: black; margin: 0; padding: 0; }
+  H1 { color: white; background-color: rgb(0,0,192);
+       padding: 5pt; border: 1px solid rgb(235,235,235);
+       text-align: center; font-size: 24px; font-weight: bold; 
+       text-transform: capitalize; margin: none; }
+  H2 { margin-left: 2em; color: rgb(0,0,255); }
+  H3 { margin-left: 5em; color: rgb(0,0,192); }
+  H4 { margin-left: 7em; color: rgb(0,0,128); }
+  H5 { margin-left: 10em; color: rgb(0,0,64); }
+  H1, H2, H3, H4, H5, P.nav { font-weight: bold;
+       font-family: verdana, sans-serif; }
+  TABLE.nav { margin-top: 3em; background-color: white; }
+  ADDRESS { text-align: right; }
+  BLOCKQUOTE { margin-left: 20%; margin-right: 20%; 
+               background: rgb(192,192,192); border: none; }
+  P, DIV.content { margin-left: 7em; 
+              margin-right: 7em; text-align: justify; }
+  OL LI { list-style-type: decimal; }
+  OL OL LI { list-style-type: lower-alpha; }
+  OL OL OL LI { list-style-type: lower-roman; }
+  DIV.margin { width: 30%; float: right; background: white; 
+               border: solid 10pt rgb(235,235,235);
+               text-align: center; padding: 1ex; }
+  DIV.margin HR { display: none; }
+  DIV.figure { margin-left: 0em; text-align: center; }
+  A:link { color: #003399; font-style: italic; }
+  A:visited { color: #990066; }
+  A:link:hover { color: #ffffff; background-color: #003399;
+  text-decoration: none; }
+  A:visited:hover { color: #ffffff; background-color: #990066;
+  text-decoration: none; }
+// --></STYLE>
+  </HEAD>
+<BODY BGCOLOR=#e8e8e8 TEXT=black LINK=blue VLINK=#600060 ALINK=red>
+
+<h1>Dealing with moving obstacles</h1>
+
+<P>A path-finding algorithm will compute a path around stationary
+obstacles, but what if the obstacles move?  By the time a unit reaches
+a particular point, an obstacle may no longer be there, or a new
+obstacle may be there.  One way to deal with this problem is to
+abandon path-finding and instead use movement algorithms that do not
+look far ahead; this approach will be discussed in a later section.
+This section will cover modifications to the path finding approach
+that could be used to handle moving obstacles.</P>
+
+<h2><A NAME=S1>Recalculating paths</A></h2>
+
+<P>In most cases, as time passes we can expect an increase in the
+difference between the world and the world at the time the path was
+found.  At some point in time, it may be worth recalculating the
+remaining path with up-to-date information.  Listed below are some
+criteria that could be used for determining when a recalculation is
+needed:</P>
+
+<DIV class=content><UL>
+<li>Every <EM>N</EM> steps:  this guarantees that the information
+  used to calculate the path is not more than <EM>N</EM> steps old.
+<li>Whenever extra CPU time is available:  this allows dynamic
+  adjustment of path quality; as more units are deployed, or if the
+  game is running on a slower computer, CPU usage per unit can be
+  decreased.
+<li>Whenever the unit changes direction: if the shortest path in
+  the world is a straight line, then a change of direction indicates
+  an obstacle, so it is possible that the obstacle has moved; this is
+  not as useful if you have varying terrain, which could also make
+  your unit change direction.
+</UL>
+
+</DIV>
+
+<P>The main drawback of path recalculation is that a lot of path
+information is thrown away.  For example, if the path is 100 steps and
+it is recalculated every 10 steps, the total number of path steps is
+100+90+80+70+60+50+40+30+20+10 = 550.  For a path of <EM>M</EM> steps,
+approximately <EM>M</EM>^<SUPER>2</SUPER> path steps are computed over
+time.  Therefore path recalculation is not a good idea if you expect
+to have many long paths.  It would be better to reuse the path
+information instead of throwing it away.</P>
+
+<h2><A NAME=S2>Path splicing</A></h2>
+
+<P>When a path needs to be recalculated, it is often to go around nearby
+obstacles, not for distant obstacles.  If distant obstacles are held
+constant, we could assume that the distant path will not change much.
+Therefore only the nearby portion of the path will change.  Instead of
+recalculating the entire path, we can recalculate the first <EM>M</EM>
+steps of the path:</P>
+
+<DIV class=content><OL>
+<li>Let <CODE>p[1]..p[N]</CODE> be the remaineder of the path
+  (<EM>N</EM> steps)
+<li>Compute a new path from <CODE>p[1]</CODE> to <CODE>p[M]</CODE>
+<li><EM>Splice</EM> this new path into the old path by removing
+  <CODE>p[1]..p[M]</CODE> and inserting the new path in its place
+</OL>
+
+</DIV>
+
+<DIV CLASS=figure><IMG width=400 height=300 SRC=mtn_path.png ALT=""></DIV>
+
+<P>Since <CODE>p[1]</CODE> and <CODE>p[M]</CODE> are fewer than
+<EM>M</EM> steps apart, it's unlikely that the new path will be long.
+Unfortunately, situations can arise in which the new path is long and
+not very good.  The accompanying figure shows such a situation.  The
+original path is 1-2-3-4; brown areas are obstacles.  If we reach 2
+and discover that the path from 2 to 3 has been blocked, path
+splicing would replace 2-3 with the path 2-3-5 and splice it in,
+resulting in the unit moving along path 1-2-5-3-4.  We can see this
+is not a good path; 1-2-5-4 would be better.</P>
+
+<P>Bad paths can often be detected by looking at the length of the new
+path.  If it is significantly longer than <EM>M</EM>, it could be
+bad.  A simple solution is to add a limit (maximum path length) to
+the path finding algorithm.  If a short path isn't found, the
+algorithm returns an error code; in this case, use path recalculation
+instead of path splicing to get a path such as 1-2-5-4.</P>
+
+<DIV CLASS=margin ALIGN=center><HR><STRONG>Implementation Note:</STRONG><br>
+Store the path in
+              <EM>reverse</EM> order: it is easy to remove
+              the beginning of the path and splice in a new
+              path with a different length; because both
+              operations occur at the <EM>end</EM> of the array.  
+              Essentially you treat the array as a <EM>stack</EM> 
+              where the top element is the next move to make.<br>
+
+<HR></DIV>
+
+<P>For cases not involving these situations, for a path with <EM>N</EM>
+steps, path splicing will compute <EM>2N</EM> to <EM>3N</EM> path steps,
+depending on how often a new path is spliced in.  This is a fairly low
+cost for the ability to resond to changes in the world.  Surprisingly,
+the cost is independent of <EM>M</EM>, the number of steps for splicing.
+Instead of affecting CPU time, <EM>M</EM> controls a tradeoff between
+responsiveness and path quality.  If <EM>M</EM> is high, the unit's
+movement will not respond quickly to changes in the map.  If <EM>M</EM>
+is too low, the paths being spliced out may be too short to allow the
+replacement path to go around the obstacle cleanly; more suboptimal
+paths (such as 1-2-5-3-4) will be found.  Try different values of
+<EM>M</EM> and different criteria for splicing (such as every 3/4 <EM>M</EM> steps) to see what's right for your map.</P>
+
+<P>Path splicing is significantly faster than path recalculation, but it
+does not respond well to major changes in the path.  It is possible to
+detect many of these situations and use path recalculation instead.
+It also has a few variables that can be adjusted, such as <EM>M</EM> and
+the choice of when to find a new path, so it can be adjusted (even at
+run-time) for different conditions.</P>
+
+<h2><A NAME=S3>Watching for map changes</A></h2>
+
+<P>An alternative to recalculating all or part of the path at certain
+intervals is to have changes to the map trigger a recalculation.  The
+map can be divided into regions, and every unit can express an
+interest in certain regions.  (All the regions that contain part of
+the path could be of interest, or only nearby regions that contain
+part of the path.)  Whenever an obstacle enters or leaves a region,
+that region is marked <EM>changed</EM>, and all units that have an
+interest in that region are notified, so that paths can be
+recalculated to take into account the change in obstacles.</P>
+
+<P>Many variations of this technique are possible.  For example, instead
+of immediately notifying the units, only notify them at regular
+intervals.  Many changes can be grouped into one notification, so that
+excessive path recalculations are not needed.  Another example is for
+the unit to poll the regions instead of the regions notifying the
+unit.</P>
+
+<P>Watching for map changes allows units to avoid recalculation whenever
+the obstacles on the map do not change, so consider it if you have
+many regions that do not change often.</P>
+
+<h2><A NAME=S4>Dealing with clashes</A></h2>
+
+<P>In general, moving obstacles can include friendly unit movement, enemy
+unit movement, and other changes to the map (such as the addition or
+removal of a wall).  For the specific case of friendly unit movement,
+some additional techniques may be useful.</P>
+
+<h2><A NAME=S5>Predicting obstacle movement</A></h2>
+
+<P>If obstacle movement can be predicted, it is possible to take into
+account future position of obstacles for path-finding.  An algorithm
+such as A* has a cost function that determines how difficult it is to
+pass a point on the map.  A* can be modified to keep track of the time
+required to reach a point (determined by current path length), and
+this time can be passed in to the cost function.  The cost function
+can then take time into account, and use the predicted obstacle
+position at that time to determine whether the map space is
+impassable.  This modification is not perfect, however, as it will not
+take into account the possibility of waiting at a point for the
+obstacle to move out of the way, and A* is not designed to
+differentiate between paths along the same route, but at different
+points in time.</P>
+
+<h2><A NAME=S6>Waiting for movement</A></h2>
+
+<P>An easily implemented technique is based on the assumption that the
+<EM>other</EM> obstacle will move first.  When an obstacle is in the
+way, just wait some amount of time for it to move.  If it still hasn't
+moved after that period of time, recalculate a path around it or to
+the destination.  If the obstacle is detected ahead of time, your unit
+can simply walk slower to give the other unit more time to get out of
+the way.</P>
+
+<P>It is possible that two units will bump into each other, and each will
+wait for the other to proceed.  In this case, a priority scheme can be
+used: assign each unit a unique number, and then make the lower
+numbered unit wait for the higher numbered unit.  This will force one
+of the units to proceed if both are waiting.  When obstacles are
+detected ahead of time, the lower numbered unit should slow down
+before reaching the expected point of collision.</P>
+
+<h2><A NAME=S7>Coordinated movement</A></h2>
+
+<P>The technique described above does not work when units are trying to
+move through a narrow corridor.  If one unit stands still while the
+other tries to go around, the corridor can't be used by both units.
+One unit will block it while the other one will take a long path
+around.</P>
+
+<P>It should be possible for the second unit to communicate with the
+first one, and ask it to back up.  Once the corridor is clear, the
+second unit can pass through, and then the first unit can go through.
+This may be complicated to implement unless you can identify the
+corridors beforehand.  For randomly generated maps, it could be very
+difficult to determine where the corridor is and how far the first
+unit needs to back up.</P>
+
+
+
+<TABLE CLASS=nav WIDTH="100%" CELLPADDING=3>
+<TR><TD ALIGN=LEFT WIDTH="33%">Back: <A REL=prev HREF="ImplementationNotes.html">Implementation</A></TD><TD ALIGN=CENTER WIDTH="33%">Up: <A HREF=index.html>Home</A></TD><TD ALIGN=RIGHT WIDTH="33%">Next: <A REL=next HREF="SpeedComparison.html">Speed</A></TD></TR>
+</TABLE>
+
+
+<HR><ADDRESS>
+</address>
+<TABLE WIDTH=100%><TR><TD ALIGN=LEFT>Last modified: Sun Nov 18 11:32:17 2001<br>From <A HREF="http://www-cs-students.stanford.edu/~amitp/gameprog.html">Amit's Game Programming Site</A></TD><TD ALIGN=RIGHT>Copyright (C) 2000, <A REL=copyright HREF="http://www-cs-students.stanford.edu/~amitp/">Amit J. Patel</A></TD></TR></TABLE>
+
+
+</BODY>
+</HTML>

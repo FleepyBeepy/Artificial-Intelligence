@@ -1,0 +1,102 @@
+.headerinput {
+	FONT-SIZE: 10px; FONT-FAMILY: Arial, helvetica, sans-serif
+}
+.space8 {
+	FONT-SIZE: 8px
+}
+.space5 {
+	FONT-SIZE: 5px
+}
+.leftmarg {
+	MARGIN-LEFT: 4px
+}
+.bothmarg {
+	MARGIN-LEFT: 4px; MARGIN-RIGHT: 4px
+}
+.selectbox {
+	FONT-SIZE: 11px; FONT-FAMILY: arial, helvetica, sans-serif
+}
+.boxheader {
+	BACKGROUND: #68a1bb
+}
+.shadedbox {
+	BACKGROUND: #e8e8e8
+}
+.puffboxlink {
+	FONT-SIZE: 70%; LINE-HEIGHT: 95%; FONT-FAMILY: arial, helvetica, sans-serif
+}
+P {
+	FONT-SIZE: 80%; FONT-FAMILY: arial, helvetica, sans-serif
+}
+LI {
+	FONT-SIZE: 80%; FONT-FAMILY: arial, helvetica, sans-serif
+}
+SMALL {
+	FONT-SIZE: 70%; LINE-HEIGHT: 95%; FONT-FAMILY: arial, helvetica, sans-serif
+}
+.textlinks {
+	TEXT-DECORATION: none
+}
+.squatstrap {
+	FONT-SIZE: 70%; COLOR: #000000; FONT-FAMILY: verdana, arial, helvetica, sans-serif
+}
+.newsnav {
+	BACKGROUND: #6ba3bf
+}
+.newssectionstrap {
+	FONT-SIZE: 95%; COLOR: #990000; FONT-FAMILY: arial, helvetica, sans-serif
+}
+.newsarthead {
+	FONT-SIZE: 115%; COLOR: #036393
+}
+.newscrosshead {
+	FONT-SIZE: 115%; COLOR: #003366
+}
+.newslisthead {
+	FONT-SIZE: 85%; FONT-FAMILY: arial, helvetica, sans-serif
+}
+.newslistdate {
+	COLOR: #990000; LINE-HEIGHT: 125%
+}
+.newshomehead {
+	FONT-SIZE: 80%; FONT-FAMILY: arial, helvetica, sans-serif
+}
+.newshomestrap {
+	FONT-SIZE: 70%; LINE-HEIGHT: 110%; FONT-FAMILY: arial, helvetica, sans-serif
+}
+.newshomedate {
+	FONT-SIZE: 80%; COLOR: #cc0000
+}
+.redlinks {
+	COLOR: #990000; TEXT-DECORATION: none
+}
+.red {
+	COLOR: #990000
+}
+.blu {
+	COLOR: #006699
+}
+.darklink {
+	COLOR: #000000
+}
+A.darklink:visited {
+	COLOR: #cc0033
+}
+.specialhead {
+	FONT-SIZE: 15px; COLOR: #333333; FONT-FAMILY: arial, helvetica, sans-serif; TEXT-DECORATION: none
+}
+.specialtext {
+	FONT-SIZE: 11px; COLOR: #333333; LINE-HEIGHT: 110%; FONT-FAMILY: arial, helvetica, sans-serif
+}
+.searchtext {
+	FONT-SIZE: 60%; FONT-FAMILY: arial, helvetica, sans-serif
+}
+.searchhead {
+	FONT-SIZE: 70%; COLOR: #333333; FONT-FAMILY: arial, helvetica, sans-serif
+}
+.searchform {
+	FONT-SIZE: 70%; FONT-FAMILY: arial, helvetica, sans-serif
+}
+.searchradio {
+	BACKGROUND: #e8e8e8; COLOR: #000000
+}

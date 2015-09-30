@@ -1,0 +1,103 @@
+<HTML>
+  <HEAD>
+    <TITLE>Walking traps in steppers</TITLE>
+<LINK REL=start HREF="http://theory.stanford.edu/~amitp/GameProgramming/index.html" />
+<LINK REL=author HREF="mailto:amitp@cs.stanford.edu" /><LINK REL=prev HREF="http://theory.stanford.edu/~amitp/GameProgramming/SpaceUsage.html" />
+<LINK REL=next HREF="http://theory.stanford.edu/~amitp/GameProgramming/AITechniques.html" />
+
+<STYLE><!--
+
+  BODY { background: rgb(235,235,235); color: black; margin: 0; padding: 0; }
+  H1 { color: white; background-color: rgb(0,0,192);
+       padding: 5pt; border: 1px solid rgb(235,235,235);
+       text-align: center; font-size: 24px; font-weight: bold; 
+       text-transform: capitalize; margin: none; }
+  H2 { margin-left: 2em; color: rgb(0,0,255); }
+  H3 { margin-left: 5em; color: rgb(0,0,192); }
+  H4 { margin-left: 7em; color: rgb(0,0,128); }
+  H5 { margin-left: 10em; color: rgb(0,0,64); }
+  H1, H2, H3, H4, H5, P.nav { font-weight: bold;
+       font-family: verdana, sans-serif; }
+  TABLE.nav { margin-top: 3em; background-color: white; }
+  ADDRESS { text-align: right; }
+  BLOCKQUOTE { margin-left: 20%; margin-right: 20%; 
+               background: rgb(192,192,192); border: none; }
+  P, DIV.content { margin-left: 7em; 
+              margin-right: 7em; text-align: justify; }
+  OL LI { list-style-type: decimal; }
+  OL OL LI { list-style-type: lower-alpha; }
+  OL OL OL LI { list-style-type: lower-roman; }
+  DIV.margin { width: 30%; float: right; background: white; 
+               border: solid 10pt rgb(235,235,235);
+               text-align: center; padding: 1ex; }
+  DIV.margin HR { display: none; }
+  DIV.figure { margin-left: 0em; text-align: center; }
+  A:link { color: #003399; font-style: italic; }
+  A:visited { color: #990066; }
+  A:link:hover { color: #ffffff; background-color: #003399;
+  text-decoration: none; }
+  A:visited:hover { color: #ffffff; background-color: #990066;
+  text-decoration: none; }
+// --></STYLE>
+  </HEAD>
+<BODY BGCOLOR=#e8e8e8 TEXT=black LINK=blue VLINK=#600060 ALINK=red>
+
+<h1>Walking traps in steppers</h1>
+
+<P>Path finders typically scan a large area to determine a path for the
+unit to follow.  Step taking algorithms typically scan a small area
+instead to determine a few steps for the unit to take.  Step takers
+can respond better to changes in the map, but this diagram shows one
+of the problems that can occur:</P>
+
+<DIV CLASS=figure><IMG WIDTH=400 HEIGHT=300 SRC=concave1.png ALT=""></DIV>
+
+<P>The unit is initially at the bottom of the map and wants to get to the
+top.  There is nothing in the area it scans (shown in green) to
+indicate that the unit should not move up, so it continues on its way.
+Near the top, it detects an obstacle and changes direction.  It then
+finds its way around the "U"-shaped obstacle, following the red path.
+In contrast, a path-finder would have found a shorter path (blue),
+never sending the unit into the concave shaped obstacle.  How can we
+avoid these areas in a step taker?</P>
+
+<h2><A NAME=S1>Predetermined places to avoid</A></h2>
+
+<P>If maps are created by a human, simply avoid making concave obstacles.
+Alternatively, you could mark each concave area in the map.  Then, the
+unit can treat interiors of concave areas as obstacles (except those
+that contain the unit's destination).</P>
+
+<DIV CLASS=figure><IMG WIDTH=400 HEIGHT=300 SRC=concave2.png ALT=""></DIV>
+
+<P>In this figure, the shaded area is treated as an obstacle because the
+unit does not want to travel into its interior.  The unit can go
+around instead of going inside and then coming out.</P>
+
+<P>This technique is also useful for computer generated maps, as long as
+they do not change often as the game runs.  You can write an algorithm
+to find all concave obstacles, and then mark their interiors as
+possible obstacles.</P>
+
+<h2><A NAME=S2>Learning to avoid traps</A></h2>
+
+<P>Instead of marking areas of the map as being obstacles, it should be
+possible for units to try any path, but then learn to avoid areas that
+caused them to turn around.  This technique may be more useful for
+maps that change often, as the units can learn to avoid an area, but
+be willing to try it again occasionally to see if things have changed.</P>
+
+
+
+<TABLE CLASS=nav WIDTH="100%" CELLPADDING=3>
+<TR><TD ALIGN=LEFT WIDTH="33%">Back: <A REL=prev HREF="SpaceUsage.html">Space</A></TD><TD ALIGN=CENTER WIDTH="33%">Up: <A HREF=index.html>Home</A></TD><TD ALIGN=RIGHT WIDTH="33%">Next: <A REL=next HREF="AITechniques.html">AI Techniques</A></TD></TR>
+</TABLE>
+
+
+<HR><ADDRESS>
+</address>
+<TABLE WIDTH=100%><TR><TD ALIGN=LEFT>Last modified: Sun Nov 18 11:32:17 2001<br>From <A HREF="http://www-cs-students.stanford.edu/~amitp/gameprog.html">Amit's Game Programming Site</A></TD><TD ALIGN=RIGHT>Copyright (C) 2000, <A REL=copyright HREF="http://www-cs-students.stanford.edu/~amitp/">Amit J. Patel</A></TD></TR></TABLE>
+
+
+</BODY>
+</HTML>

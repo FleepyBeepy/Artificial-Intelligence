@@ -1,0 +1,53 @@
+
+-------------------------------------------------------------------
+
+March 6, 2001	        Version 1.2
+
+        - Created Flocking design-time and run-time package
+        - Created FlockReg File to register components
+        - Added TFlock and TFlockWorld Icons
+        - Changed TFlock to TCustomFlock and then added TFlock descendant
+          to expose properties
+        - Moved Flock (TCollection) creation into AfterConstruction method
+        - Added TCustomFlock.CreateFlock protected method
+        - Defined TBoidClass
+        - Added overloaded constructor for TFlockCollection to accept
+          TBoidClass
+        - Made TCustomFlock.Boids property writable
+        - TBoid property changes now correctly signal a change event
+        - Added BeginUpdate and EndUpdate methods to TCustomFlock
+        - Added OnBoidAdded, OnBoidDelete, OnBoidExecuted, OnBoidExecuting
+          OnApplyAvoidance, OnApplyAlignment, OnApplyCohesion,
+          OnApplySeparation, OnClear, OnExecuting, OnExecuted events
+          to TCustomFlock
+        - Added Overloaded CrossProduct, DotProduct, and DistanceTo
+          methods to TVector, which accept 3 reals
+        - Added ProtoFlock TFlock instance in FlockMain, holds default flock
+          parameters for when flocks are created.  Also allows
+          design-time specification of flock properties
+        - Added Shapes to avoid in FlockMain!!!  Shapes must be the first series
+          in the TChart.  This application resets the change to move
+          directly away from the shape... to be more realistic,
+          the boid should probably move along the wall of the
+          shape
+        - Changed TFlockWorld instance to design-time in FlockMain
+        - Set Chart dimensions based on TFlockWorld dimensions at
+          form creation
+
+        
+-------------------------------------------------------------------
+
+January 27, 2001	Version 1.1
+
+	- Added AutoCalcProperties to TFlock (On by default)
+	- Added "Follow Mouse" Checkbox and MouseOver code to test the AutoCalcProperties
+	  Note that the Separation, Alignment, and Avoidance flocking rules' strengths need to
+          be turned down to really see this
+	- Recompiled Help Files with my HelpScribble key INSTALLED this time :)
+
+
+-------------------------------------------------------------------
+
+January 14, 2001	Version 1
+
+	Original Version

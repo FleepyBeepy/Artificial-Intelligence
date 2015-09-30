@@ -1,0 +1,22 @@
+unit FlockReg;
+
+interface
+
+uses
+    Classes;
+
+procedure Register;
+
+implementation
+
+uses
+    Flock;
+
+procedure Register;
+begin
+  RegisterComponents('AI', [TFlock]);
+  RegisterComponents('AI', [TFlockWorld]);
+end;
+
+end.
+ 

@@ -1,0 +1,105 @@
+<HTML>
+  <HEAD>
+    <TITLE>Applications</TITLE>
+<LINK REL=start HREF="http://theory.stanford.edu/~amitp/GameProgramming/index.html" />
+<LINK REL=author HREF="mailto:amitp@cs.stanford.edu" /><LINK REL=prev HREF="http://theory.stanford.edu/~amitp/GameProgramming/UserExperience.html" />
+
+<STYLE><!--
+
+  BODY { background: rgb(235,235,235); color: black; margin: 0; padding: 0; }
+  H1 { color: white; background-color: rgb(0,0,192);
+       padding: 5pt; border: 1px solid rgb(235,235,235);
+       text-align: center; font-size: 24px; font-weight: bold; 
+       text-transform: capitalize; margin: none; }
+  H2 { margin-left: 2em; color: rgb(0,0,255); }
+  H3 { margin-left: 5em; color: rgb(0,0,192); }
+  H4 { margin-left: 7em; color: rgb(0,0,128); }
+  H5 { margin-left: 10em; color: rgb(0,0,64); }
+  H1, H2, H3, H4, H5, P.nav { font-weight: bold;
+       font-family: verdana, sans-serif; }
+  TABLE.nav { margin-top: 3em; background-color: white; }
+  ADDRESS { text-align: right; }
+  BLOCKQUOTE { margin-left: 20%; margin-right: 20%; 
+               background: rgb(192,192,192); border: none; }
+  P, DIV.content { margin-left: 7em; 
+              margin-right: 7em; text-align: justify; }
+  OL LI { list-style-type: decimal; }
+  OL OL LI { list-style-type: lower-alpha; }
+  OL OL OL LI { list-style-type: lower-roman; }
+  DIV.margin { width: 30%; float: right; background: white; 
+               border: solid 10pt rgb(235,235,235);
+               text-align: center; padding: 1ex; }
+  DIV.margin HR { display: none; }
+  DIV.figure { margin-left: 0em; text-align: center; }
+  A:link { color: #003399; font-style: italic; }
+  A:visited { color: #990066; }
+  A:link:hover { color: #ffffff; background-color: #003399;
+  text-decoration: none; }
+  A:visited:hover { color: #ffffff; background-color: #990066;
+  text-decoration: none; }
+// --></STYLE>
+  </HEAD>
+<BODY BGCOLOR=#e8e8e8 TEXT=black LINK=blue VLINK=#600060 ALINK=red>
+
+<h1>Applications</h1>
+
+<P>In addition to finding a path for a unit to move along, path-finding
+can be used for several other purposes.</P>
+
+<h2><A NAME=S1>Exploration</A></h2>
+
+<P>If part of your cost function penalizes paths that are on known
+territory, paths are more likely to go through unexplored territory.
+These paths are good for scout units.</P>
+
+<h2><A NAME=S2>Spying</A></h2>
+
+<P>If part of the cost function penalizes paths near the enemy's
+watchtowers and other units, your unit will tend to stay in hiding.
+Note however that to work well, you may have to update the path
+periodically to take into account enemy unit movements.</P>
+
+<h2><A NAME=S3>Road Building</A></h2>
+
+<P>Historically, roads have been built along paths that are often used.
+As the paths are used more and more often, vegetation is removed and
+replaced with dirt, and later with stone or other material.  One
+application of path-finding is to find roads.  Given places that
+people want to go (cities, lakes, springs, sources of minerals, and so
+on), find paths randomly between these important locations.  After
+finding hundreds or perhaps thousands of paths, determine which spaces
+on the map most often occur on paths.  Turn those spaces into roads.
+Repeat the experiment, with the path-finder preferring roads, and you
+will find more roads to build.  This technique can work for multiple
+types of roads as well (highways, roads, dirt paths): the most
+commonly used spaces would become highways and less commonly used
+spaces would become roads or dirt paths.</P>
+
+<h2><A NAME=S4>City Building</A></h2>
+
+<P>Cities often form around natural resources such as farmland or sources
+of mineral wealth.  As people from these cities trade with each other,
+they need trading routes.  Use path-finding to find their trading
+routes, and then mark a day's worth of travel on these routes.  After
+a caravan travels for a day, it will need a place to stop: a perfect
+place for a city!  Cities that lie along more than one travel route
+are great places for trading villages, which eventually grow into
+cities.</P>
+
+<P>A combination of the road building and city building may be useful for
+producing realistic maps, either for scenarios or for randomized maps.</P>
+
+
+
+<TABLE CLASS=nav WIDTH="100%" CELLPADDING=3>
+<TR><TD ALIGN=LEFT WIDTH="33%">Back: <A REL=prev HREF="UserExperience.html">User experience with shortest paths</A></TD><TD ALIGN=CENTER WIDTH="33%">Up: <A HREF=index.html>Home</A></TD><TD ALIGN=RIGHT WIDTH="33%"></TD></TR>
+</TABLE>
+
+
+<HR><ADDRESS>
+</address>
+<TABLE WIDTH=100%><TR><TD ALIGN=LEFT>Last modified: Sun Nov 18 11:32:17 2001<br>From <A HREF="http://www-cs-students.stanford.edu/~amitp/gameprog.html">Amit's Game Programming Site</A></TD><TD ALIGN=RIGHT>Copyright (C) 2000, <A REL=copyright HREF="http://www-cs-students.stanford.edu/~amitp/">Amit J. Patel</A></TD></TR></TABLE>
+
+
+</BODY>
+</HTML>

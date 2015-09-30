@@ -1,0 +1,68 @@
+<HTML>
+<HEAD>
+  <SCRIPT language=javascript>
+
+<!--
+var OnTop = true;
+
+function ChangeOnTop()
+{
+        if (OnTop == true) OnTop = false; 
+        else if (OnTop == false)
+        {
+        OnTop = true;
+        self.focus();
+        }
+}
+
+function FocusMe()
+{
+        if (OnTop == true) setTimeout("self.focus()",250);
+}
+// -->
+
+
+</SCRIPT>
+  
+<TITLE>Gamasutra - Smart Moves - listing 3</TITLE>
+</HEAD>
+<BODY BGCOLOR="#OOOOOO" TEXT="#FFFFFF" LINK="cc9933" VLINK="cc9933" onBlur>
+<CENTER>
+<TABLE BORDER=0><TR>
+      <TD> <FONT FACE="Arial,helvetica,sans-serif"><b>Listing 3:</b> A* search 
+        algorithm.</FONT> 
+        <PRE>
+priorityqueue	Open
+list		Closed
+
+AStarSearch
+	s.g = 0		// s is the start node
+	s.h = GoalDistEstimate( s )
+	s.f = s.g + s.h
+	s.parent = null
+	push s on Open
+	while Open is not empty
+		pop node n from Open  // n has the lowest f
+		if n is a goal node 
+			construct path 
+			return success
+		for each successor n' of n
+			newg = n.g + cost(n,n')
+			if n' is in Open or Closed,
+			 and n'.g <= newg
+				skip
+			n'.parent = n
+			n'.g = newg
+			n'.h = GoalDistEstimate( n' )
+			n'.f = n'.g + n'.h
+			if n' is in Closed
+				remove it from Closed
+			if n' is not yet in Open
+				push n' on Open
+		push n onto Closed
+	return failure  // if no path found
+</PRE>
+      </TD>
+    </TR></TABLE></CENTER>
+
+</BODY></HTML>
