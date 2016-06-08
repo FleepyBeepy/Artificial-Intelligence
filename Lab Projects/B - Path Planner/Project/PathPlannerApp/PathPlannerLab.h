@@ -38,6 +38,8 @@
 #include <vector>
 #include "../PathSearch/PathSearch.h"
 #include "Resource.h"
+#include "../TileSystem/TileMap.h"
+
 
 // VC7.1 thinks pre-incrementing inside a while condition is dangerous.
 #if _MSC_VER < 1400

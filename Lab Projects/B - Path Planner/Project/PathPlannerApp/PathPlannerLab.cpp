@@ -695,31 +695,51 @@ void GroundUpPathPlanner::timeSearch()
 					_T("Solution Checker"), MB_OK);
 			}
 
-			deque<double> v1, v2;
-			std::size_t i = tempSolution.size();
-			double dare = tile_map_.getTileRadius() * (1 << 1);
-			double down = dare * dare;
+			//deque<double> v1, v2;
+			std::size_t solutionsize = tempSolution.size() - 1;
+			//double dare = tile_map_.getTileRadius() * (1 << 1);
+			//double down = dare * dare;
 
-			dare = down + 0.00001;
-			down -= 0.00001;
+			//dare = down + 0.00001;
+			//down -= 0.00001;
 
-			while (--i)
+			unsigned int i = 0;
+			while (i < solutionsize)
 			{
-				v1.clear();
-				v2.clear();
-				v1.push_back(tempSolution[i - 1]->getYCoordinate());
-				v2.push_front(tempSolution[i]->getXCoordinate());
-				v1.push_back(tempSolution[i - 1]->getXCoordinate());
-				v2.push_front(tempSolution[i]->getYCoordinate());
-				transform(v1.begin(), v1.end(), v2.begin(), v1.begin(), minus<double>());
-				transform(v1.begin(), v1.end(), v2.begin(), bind2nd(ptr_fun<double,double>(pow), 2.0));
-				v1.back() = v2.back() + v2.front();
+				// Check from beginning to end, each node against another next to it in the list to see if they are next to each other.
+				const Tile * tile1 = tempSolution[i];
+				const Tile * tile2 = tempSolution[i+1];
 
-				if (dare < v1.back() || v1.back() < down)
+				double deltaX = tile1->getXCoordinate() - tile2->getXCoordinate();
+				double deltaY = tile1->getYCoordinate() - tile2->getYCoordinate();
+
+				double distance = sqrt((deltaX * deltaX) + (deltaY * deltaY));
+
+				double studentTileDistance = distance - .0001f; // Making sure we take into account of floatation error
+
+				double actualTtileDistance = tile_map_.getTileRadius() * 2;
+				if (studentTileDistance > actualTtileDistance)
 				{
 					MessageBox(NULL, _T("A node is not next to its parent!"),
 						_T("Solution Checker"), MB_OK);
 				}
+				i++;
+
+				//v1.clear();
+				//v2.clear();
+				//v1.push_back(tempSolution[i - 1]->getYCoordinate());
+				//v2.push_front(tempSolution[i]->getXCoordinate());
+				//v1.push_back(tempSolution[i - 1]->getXCoordinate());
+				//v2.push_front(tempSolution[i]->getYCoordinate());
+				//transform(v1.begin(), v1.end(), v2.begin(), v1.begin(), minus<double>());
+				//transform(v1.begin(), v1.end(), v2.begin(), bind2nd(ptr_fun<double,double>(pow), 2.0));
+				//v1.back() = v2.back() + v2.front();
+
+				//if (dare < v1.back() || v1.back() < down)
+				//{
+				//	MessageBox(NULL, _T("A node is not next to its parent!"),
+				//		_T("Solution Checker"), MB_OK);
+				//}
 			}
 		}
 		else/* if(!mybTimeSearch) *///!done
@@ -758,32 +778,27 @@ void GroundUpPathPlanner::checkSolution(HWND window_handle) const
 				MessageBox(window_handle, _T("The last tile is not the goal!"),
 					_T("Solution Checker"), MB_OK);
 			}
-
-			deque<double> v1, v2;
-			std::size_t i = tempSolution.size();
-			double dare = tile_map_.getTileRadius() * (1 << 1);
-			double down = dare * dare;
-
-			dare = down + 0.00001;
-			down -= 0.00001;
-
-			while (--i)
+			std::size_t solutionsize = tempSolution.size() - 1;
+			unsigned int i = 0;
+			while (i < solutionsize)
 			{
-				v1.clear();
-				v2.clear();
-				v1.push_back(tempSolution[i - 1]->getYCoordinate());
-				v2.push_front(tempSolution[i]->getXCoordinate());
-				v1.push_back(tempSolution[i - 1]->getXCoordinate());
-				v2.push_front(tempSolution[i]->getYCoordinate());
-				transform(v1.begin(), v1.end(), v2.begin(), v1.begin(), minus<double>());
-				transform(v1.begin(), v1.end(), v2.begin(), bind2nd(ptr_fun<double,double>(pow), 2.0));
-				v1.back() = v2.back() + v2.front();
+				const Tile * tile1 = tempSolution[i];
+				const Tile * tile2 = tempSolution[i + 1];
 
-				if (dare < v1.back() || v1.back() < down)
+				double deltaX = tile1->getXCoordinate() - tile2->getXCoordinate();
+				double deltaY = tile1->getYCoordinate() - tile2->getYCoordinate();
+
+				double distance = sqrt((deltaX * deltaX) + (deltaY * deltaY));
+
+				double studentTileDistance = distance - .0001f; // Making sure we take into account of floatation error
+
+				double actualTtileDistance = tile_map_.getTileRadius() * 2;
+				if (studentTileDistance > actualTtileDistance)
 				{
 					MessageBox(NULL, _T("A node is not next to its parent!"),
 						_T("Solution Checker"), MB_OK);
 				}
+				i++;
 			}
 		}
 		else/* if(!mybTimeSearch) *///!done
