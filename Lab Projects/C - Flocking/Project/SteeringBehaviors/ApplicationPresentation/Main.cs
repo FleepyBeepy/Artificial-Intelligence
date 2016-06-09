@@ -128,8 +128,8 @@ namespace FullSailAFI.SteeringBehaviors.ApplicationPresentation
 
                     sprite.Transform = Matrix.Identity;
 
-                    sprite.Draw(backgroundTexture, Vector3.Empty,
-                        Vector3.Empty, ColorValue.FromColor(Color.White).ToArgb());
+                    sprite.Draw(backgroundTexture, new Vector3(0, 0, 0),
+                       new Vector3(0, 0, 0), ColorValue.FromColor(Color.White).ToArgb());
 
                     foreach (ITaskForce tf in taskForces)
                     {
@@ -159,7 +159,7 @@ namespace FullSailAFI.SteeringBehaviors.ApplicationPresentation
                             sprite.Transform = transform;
 
                             sprite.Draw(shipTexture, new Vector3(ship.CollisionRadius, ship.CollisionRadius, 0),
-                                Vector3.Empty, tf.Color.ToArgb());
+                                new Vector3(0, 0, 0), tf.Color.ToArgb());
                         }
                     }
 

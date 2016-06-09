@@ -56,7 +56,7 @@ namespace FullSailAFI.SteeringBehaviors
                 ship = inventory.Dequeue();
             }
             double heading = rng.NextDouble() * Math.PI * 2;
-            Vector3 velocity = Vector3.Empty;
+            Vector3 velocity = new Vector3(0, 0, 0);
             velocity.X = Convert.ToSingle(Math.Cos(heading));
             velocity.Y = Convert.ToSingle(Math.Sin(heading));
             ship.Velocity = velocity * Convert.ToSingle(

@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 14.00
+# Visual Studio 2015
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WumpusWorld", "WumpusWorld\WumpusWorld.vcxproj", "{E8544283-32E4-4AA1-B74D-EDA176FDDC0D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BehaviorTree", "BehaviorTree\BehaviorTree.vcxproj", "{C14B4816-67A3-450E-983C-2AE960257182}"

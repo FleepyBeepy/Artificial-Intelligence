@@ -32,17 +32,17 @@ namespace FullSailAFI.SteeringBehaviors.StudentAI
 
         private Vector3 CalculateAlignmentAcceleration(MovingObject boid)
         {
-            return Vector3.Empty;
+            return new Vector3();
         }
 
         private Vector3 CalculateCohesionAcceleration(MovingObject boid)
         {
-            return Vector3.Empty;
+            return new Vector3();
         }
 
         private Vector3 CalculateSeparationAcceleration(MovingObject boid)
         {
-            return Vector3.Empty;
+            return new Vector3();
         }
 
         #endregion

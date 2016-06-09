@@ -18,7 +18,7 @@ namespace FullSailAFI.SteeringBehaviors.Core
         #region Constructors
         public BaseObject()
         {
-            Position = Vector3.Empty;
+            Position = new Vector3(0, 0, 0);
             CollisionRadius = 0;
         }
         #endregion

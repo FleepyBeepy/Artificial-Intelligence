@@ -37,7 +37,7 @@ namespace FullSailAFI.SteeringBehaviors.Core
         public MovingObject()
         {
             MaxSpeed = 200.0f;
-            Velocity = Vector3.Empty;
+            Velocity = new Vector3(0, 0, 0);
             SafeRadius = 50.0f;
         }
         #endregion
