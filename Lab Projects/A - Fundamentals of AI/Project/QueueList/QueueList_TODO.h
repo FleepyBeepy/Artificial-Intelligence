@@ -7,7 +7,7 @@
 
 namespace fullsail_ai { namespace fundamentals {
 
-	//! \todo
+	//! \TODO
 	//!   - Complete the definition of the <code>QueueList::Iterator</code> pre-increment operator.
 	//!   - Complete the definition of the <code>QueueList::Iterator</code> dereference operator.
 	//!   - Define the <code>QueueList</code> constructor.
