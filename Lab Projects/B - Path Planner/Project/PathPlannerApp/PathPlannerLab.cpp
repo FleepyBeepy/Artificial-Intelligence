@@ -2671,6 +2671,28 @@ void PathPlannerLab::paintTileGrid(HDC device_context_handle) const
 	DeleteDC(buffer_context_handle);
 }
 
+
+
+void BindStdHandlesToConsole()
+{
+	// Redirect the CRT standard input, output, and error handles to the console
+	freopen("CONIN$", "r", stdin);
+	freopen("CONOUT$", "w", stdout);
+	freopen("CONOUT$", "w", stderr);
+
+	//Clear the error state for each of the C++ standard stream objects. We need to do this, as
+	//attempts to access the standard streams before they refer to a valid target will cause the
+	//iostream objects to enter an error state. In versions of Visual Studio after 2005, this seems
+	//to always occur during startup regardless of whether anything has been read from or written to
+	//the console or not.
+	std::wcout.clear();
+	std::cout.clear();
+	std::wcerr.clear();
+	std::cerr.clear();
+	std::wcin.clear();
+	std::cin.clear();
+}
+
 int APIENTRY _tWinMain(HINSTANCE application_handle,
                        HINSTANCE previous_application_handle,
                        LPTSTR    command_line,
@@ -2688,21 +2710,25 @@ int APIENTRY _tWinMain(HINSTANCE application_handle,
 	coninfo.dwSize.Y = 500;
 	SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coninfo.dwSize);
 
-	// Redirect standard output to the console window.
-	HANDLE standard_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	int console_handle = _open_osfhandle(reinterpret_cast<intptr_t>(standard_handle), _O_TEXT);
+	//// Redirect standard output to the console window.
+	//HANDLE standard_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	//int console_handle = _open_osfhandle(reinterpret_cast<intptr_t>(standard_handle), _O_TEXT);
 
-	*stdout = *_fdopen(console_handle, "w");
-	setvbuf(stdout, 0, _IONBF, 0);
+	//*stdout = *_fdopen(console_handle, "w");
+	//setvbuf(stdout, 0, _IONBF, 0);
 
-	// Redirect standard error to the console window.
-	standard_handle = GetStdHandle(STD_ERROR_HANDLE);
-	console_handle = _open_osfhandle(reinterpret_cast<intptr_t>(standard_handle), _O_TEXT);
-	*stderr = *_fdopen(console_handle, "w");
-	setvbuf(stderr, 0, _IONBF, 0);
+	//// Redirect standard error to the console window.
+	//standard_handle = GetStdHandle(STD_ERROR_HANDLE);
+	//console_handle = _open_osfhandle(reinterpret_cast<intptr_t>(standard_handle), _O_TEXT);
+	//*stderr = *_fdopen(console_handle, "w");
+	//setvbuf(stderr, 0, _IONBF, 0);
 
-	// Allow C++ code to benefit from console redirection.
-	ios::sync_with_stdio();
+	//// Allow C++ code to benefit from console redirection.
+	//ios::sync_with_stdio(false);
+
+
+	BindStdHandlesToConsole();
+
 //#endif
 
 	// Perform application initialization:
