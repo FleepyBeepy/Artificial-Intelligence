@@ -30,9 +30,11 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.renderControl = new FullSailAFI.SteeringBehaviors.ApplicationPresentation.RenderControl();
+            this.label5 = new System.Windows.Forms.Label();
+            this.flockRadiusSelector = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
             this.numShipsSelector = new System.Windows.Forms.NumericUpDown();
-            this.enableVSyncButton = new System.Windows.Forms.CheckBox();
             this.studentImplementationButton = new System.Windows.Forms.RadioButton();
             this.fullSailImplementationButton = new System.Windows.Forms.RadioButton();
             this.FPSInfo = new System.Windows.Forms.Label();
@@ -52,19 +54,16 @@
             this.addTaskForceButton = new System.Windows.Forms.Button();
             this.taskForceSelector = new System.Windows.Forms.ListBox();
             this.updateTimer = new System.Timers.Timer();
-            this.flockRadiusSelector = new System.Windows.Forms.NumericUpDown();
-            this.label5 = new System.Windows.Forms.Label();
-            this.renderControl = new FullSailAFI.SteeringBehaviors.ApplicationPresentation.RenderControl();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.flockRadiusSelector)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numShipsSelector)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.separationWeightSelector)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cohesionWeightSelector)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.alignmentWeightSelector)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.updateTimer)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.flockRadiusSelector)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -83,7 +82,6 @@
             this.splitContainer1.Panel2.Controls.Add(this.flockRadiusSelector);
             this.splitContainer1.Panel2.Controls.Add(this.label4);
             this.splitContainer1.Panel2.Controls.Add(this.numShipsSelector);
-            this.splitContainer1.Panel2.Controls.Add(this.enableVSyncButton);
             this.splitContainer1.Panel2.Controls.Add(this.studentImplementationButton);
             this.splitContainer1.Panel2.Controls.Add(this.fullSailImplementationButton);
             this.splitContainer1.Panel2.Controls.Add(this.FPSInfo);
@@ -96,6 +94,36 @@
             this.splitContainer1.Size = new System.Drawing.Size(1264, 600);
             this.splitContainer1.SplitterDistance = 900;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // renderControl
+            // 
+            this.renderControl.Location = new System.Drawing.Point(0, 0);
+            this.renderControl.MinimumSize = new System.Drawing.Size(900, 600);
+            this.renderControl.Name = "renderControl";
+            this.renderControl.Size = new System.Drawing.Size(900, 600);
+            this.renderControl.TabIndex = 0;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(127, 237);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(72, 13);
+            this.label5.TabIndex = 27;
+            this.label5.Text = "Flock Radius:";
+            // 
+            // flockRadiusSelector
+            // 
+            this.flockRadiusSelector.Location = new System.Drawing.Point(205, 235);
+            this.flockRadiusSelector.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.flockRadiusSelector.Name = "flockRadiusSelector";
+            this.flockRadiusSelector.Size = new System.Drawing.Size(62, 20);
+            this.flockRadiusSelector.TabIndex = 26;
+            this.flockRadiusSelector.ValueChanged += new System.EventHandler(this.flockRadiusSelector_ValueChanged);
             // 
             // label4
             // 
@@ -129,19 +157,6 @@
             0});
             this.numShipsSelector.ValueChanged += new System.EventHandler(this.numShipsSelector_ValueChanged);
             // 
-            // enableVSyncButton
-            // 
-            this.enableVSyncButton.AutoSize = true;
-            this.enableVSyncButton.Checked = true;
-            this.enableVSyncButton.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.enableVSyncButton.Location = new System.Drawing.Point(6, 539);
-            this.enableVSyncButton.Name = "enableVSyncButton";
-            this.enableVSyncButton.Size = new System.Drawing.Size(93, 17);
-            this.enableVSyncButton.TabIndex = 23;
-            this.enableVSyncButton.Text = "Enable VSync";
-            this.enableVSyncButton.UseVisualStyleBackColor = true;
-            this.enableVSyncButton.CheckedChanged += new System.EventHandler(this.enableVSyncButton_CheckedChanged);
-            // 
             // studentImplementationButton
             // 
             this.studentImplementationButton.AutoSize = true;
@@ -168,7 +183,7 @@
             // FPSInfo
             // 
             this.FPSInfo.AutoSize = true;
-            this.FPSInfo.Location = new System.Drawing.Point(111, 540);
+            this.FPSInfo.Location = new System.Drawing.Point(15, 534);
             this.FPSInfo.Name = "FPSInfo";
             this.FPSInfo.Size = new System.Drawing.Size(57, 13);
             this.FPSInfo.TabIndex = 20;
@@ -177,7 +192,7 @@
             // totalShipsInfo
             // 
             this.totalShipsInfo.AutoSize = true;
-            this.totalShipsInfo.Location = new System.Drawing.Point(3, 559);
+            this.totalShipsInfo.Location = new System.Drawing.Point(15, 558);
             this.totalShipsInfo.Name = "totalShipsInfo";
             this.totalShipsInfo.Size = new System.Drawing.Size(96, 13);
             this.totalShipsInfo.TabIndex = 19;
@@ -344,36 +359,6 @@
             this.updateTimer.SynchronizingObject = this;
             this.updateTimer.Elapsed += new System.Timers.ElapsedEventHandler(this.updateTimer_Elapsed);
             // 
-            // flockRadiusSelector
-            // 
-            this.flockRadiusSelector.Location = new System.Drawing.Point(205, 235);
-            this.flockRadiusSelector.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.flockRadiusSelector.Name = "flockRadiusSelector";
-            this.flockRadiusSelector.Size = new System.Drawing.Size(62, 20);
-            this.flockRadiusSelector.TabIndex = 26;
-            this.flockRadiusSelector.ValueChanged += new System.EventHandler(this.flockRadiusSelector_ValueChanged);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(127, 237);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(72, 13);
-            this.label5.TabIndex = 27;
-            this.label5.Text = "Flock Radius:";
-            // 
-            // renderControl
-            // 
-            this.renderControl.Location = new System.Drawing.Point(0, 0);
-            this.renderControl.MinimumSize = new System.Drawing.Size(900, 600);
-            this.renderControl.Name = "renderControl";
-            this.renderControl.Size = new System.Drawing.Size(900, 600);
-            this.renderControl.TabIndex = 0;
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -389,6 +374,7 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
             this.splitContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.flockRadiusSelector)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numShipsSelector)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -396,7 +382,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.cohesionWeightSelector)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.alignmentWeightSelector)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.updateTimer)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.flockRadiusSelector)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -405,7 +390,6 @@
 
         private System.Windows.Forms.SplitContainer splitContainer1;
         private RenderControl renderControl;
-        private System.Windows.Forms.CheckBox enableVSyncButton;
         private System.Windows.Forms.RadioButton studentImplementationButton;
         private System.Windows.Forms.RadioButton fullSailImplementationButton;
         private System.Windows.Forms.Label FPSInfo;

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.DirectX;
 
 namespace FullSailAFI.SteeringBehaviors.Core
 {
@@ -37,7 +36,7 @@ namespace FullSailAFI.SteeringBehaviors.Core
         public MovingObject()
         {
             MaxSpeed = 200.0f;
-            Velocity = new Vector3(0, 0, 0);
+            Velocity = Vector3.Empty;
             SafeRadius = 50.0f;
         }
         #endregion
@@ -50,10 +49,10 @@ namespace FullSailAFI.SteeringBehaviors.Core
         /// <param name="deltaTime">seconds since the last Update call</param>
         public virtual void Update(float deltaTime)
         {
-            if (Velocity.LengthSq() > MaxSpeed * MaxSpeed)
+            if (Velocity.LengthSquared > MaxSpeed * MaxSpeed)
             {
                 Velocity = Vector3.Normalize(Velocity);
-                Velocity = Vector3.Scale(Velocity, MaxSpeed);
+                Velocity *= MaxSpeed;
             }
             Position += Velocity * deltaTime;
         }

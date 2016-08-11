@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.DirectX;
+//using Microsoft.DirectX;
 
 namespace FullSailAFI.SteeringBehaviors.Core
 {
@@ -18,7 +18,7 @@ namespace FullSailAFI.SteeringBehaviors.Core
         #region Constructors
         public BaseObject()
         {
-            Position = new Vector3(0, 0, 0);
+            Position = Vector3.Empty;
             CollisionRadius = 0;
         }
         #endregion

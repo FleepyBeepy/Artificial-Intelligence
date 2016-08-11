@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+using System.Drawing;
 
 using FullSailAFI.SteeringBehaviors.Core;
 
@@ -8,7 +7,7 @@ namespace FullSailAFI.SteeringBehaviors
 {
     public interface ITaskForce
     {
-        ColorValue Color { get; set; }
+        Color Color { get; set; }
         float AlignmentStrength { get; set; }
         float CohesionStrength { get; set; }
         float SeparationStrength { get; set; }
