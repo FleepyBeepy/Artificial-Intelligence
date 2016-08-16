@@ -189,7 +189,8 @@ namespace FullSailAFI.SteeringBehaviors.Core
         /// </summary>
         public void Normalize()
         {
-            this = this / Length;
+            if(!float.IsNaN(Length) && Length != 0)
+                this = this / Length;
         }
 
         /// <summary>
