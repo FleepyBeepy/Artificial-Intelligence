@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
+using System.Drawing;
 using FullSailAFI.SteeringBehaviors.Core;
 
 namespace FullSailAFI.SteeringBehaviors
@@ -74,11 +73,9 @@ namespace FullSailAFI.SteeringBehaviors
                 inventory.Enqueue(ship);
         }
 
-        public ColorValue GetRandomColor()
+        public Color GetRandomColor()
         {
-            return new ColorValue(Convert.ToSingle(rng.NextDouble() * 0.5 + 0.5),
-                Convert.ToSingle(rng.NextDouble() * 0.5 + 0.5),
-                Convert.ToSingle(rng.NextDouble() * 0.5 + 0.5));
+            return Color.FromArgb(rng.Next(128) + 127, rng.Next(128) + 127, rng.Next(128) + 127);
         }
 
         #endregion

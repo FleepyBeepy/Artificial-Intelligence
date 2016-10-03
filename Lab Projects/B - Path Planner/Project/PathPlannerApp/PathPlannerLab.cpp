@@ -695,31 +695,51 @@ void GroundUpPathPlanner::timeSearch()
 					_T("Solution Checker"), MB_OK);
 			}
 
-			deque<double> v1, v2;
-			std::size_t i = tempSolution.size();
-			double dare = tile_map_.getTileRadius() * (1 << 1);
-			double down = dare * dare;
+			//deque<double> v1, v2;
+			std::size_t solutionsize = tempSolution.size() - 1;
+			//double dare = tile_map_.getTileRadius() * (1 << 1);
+			//double down = dare * dare;
 
-			dare = down + 0.00001;
-			down -= 0.00001;
+			//dare = down + 0.00001;
+			//down -= 0.00001;
 
-			while (--i)
+			unsigned int i = 0;
+			while (i < solutionsize)
 			{
-				v1.clear();
-				v2.clear();
-				v1.push_back(tempSolution[i - 1]->getYCoordinate());
-				v2.push_front(tempSolution[i]->getXCoordinate());
-				v1.push_back(tempSolution[i - 1]->getXCoordinate());
-				v2.push_front(tempSolution[i]->getYCoordinate());
-				transform(v1.begin(), v1.end(), v2.begin(), v1.begin(), minus<double>());
-				transform(v1.begin(), v1.end(), v2.begin(), bind2nd(ptr_fun<double,double>(pow), 2.0));
-				v1.back() = v2.back() + v2.front();
+				// Check from beginning to end, each node against another next to it in the list to see if they are next to each other.
+				const Tile * tile1 = tempSolution[i];
+				const Tile * tile2 = tempSolution[i+1];
 
-				if (dare < v1.back() || v1.back() < down)
+				double deltaX = tile1->getXCoordinate() - tile2->getXCoordinate();
+				double deltaY = tile1->getYCoordinate() - tile2->getYCoordinate();
+
+				double distance = sqrt((deltaX * deltaX) + (deltaY * deltaY));
+
+				double studentTileDistance = distance - .0001f; // Making sure we take into account of floatation error
+
+				double actualTtileDistance = tile_map_.getTileRadius() * 2;
+				if (studentTileDistance > actualTtileDistance)
 				{
 					MessageBox(NULL, _T("A node is not next to its parent!"),
 						_T("Solution Checker"), MB_OK);
 				}
+				i++;
+
+				//v1.clear();
+				//v2.clear();
+				//v1.push_back(tempSolution[i - 1]->getYCoordinate());
+				//v2.push_front(tempSolution[i]->getXCoordinate());
+				//v1.push_back(tempSolution[i - 1]->getXCoordinate());
+				//v2.push_front(tempSolution[i]->getYCoordinate());
+				//transform(v1.begin(), v1.end(), v2.begin(), v1.begin(), minus<double>());
+				//transform(v1.begin(), v1.end(), v2.begin(), bind2nd(ptr_fun<double,double>(pow), 2.0));
+				//v1.back() = v2.back() + v2.front();
+
+				//if (dare < v1.back() || v1.back() < down)
+				//{
+				//	MessageBox(NULL, _T("A node is not next to its parent!"),
+				//		_T("Solution Checker"), MB_OK);
+				//}
 			}
 		}
 		else/* if(!mybTimeSearch) *///!done
@@ -758,32 +778,27 @@ void GroundUpPathPlanner::checkSolution(HWND window_handle) const
 				MessageBox(window_handle, _T("The last tile is not the goal!"),
 					_T("Solution Checker"), MB_OK);
 			}
-
-			deque<double> v1, v2;
-			std::size_t i = tempSolution.size();
-			double dare = tile_map_.getTileRadius() * (1 << 1);
-			double down = dare * dare;
-
-			dare = down + 0.00001;
-			down -= 0.00001;
-
-			while (--i)
+			std::size_t solutionsize = tempSolution.size() - 1;
+			unsigned int i = 0;
+			while (i < solutionsize)
 			{
-				v1.clear();
-				v2.clear();
-				v1.push_back(tempSolution[i - 1]->getYCoordinate());
-				v2.push_front(tempSolution[i]->getXCoordinate());
-				v1.push_back(tempSolution[i - 1]->getXCoordinate());
-				v2.push_front(tempSolution[i]->getYCoordinate());
-				transform(v1.begin(), v1.end(), v2.begin(), v1.begin(), minus<double>());
-				transform(v1.begin(), v1.end(), v2.begin(), bind2nd(ptr_fun<double,double>(pow), 2.0));
-				v1.back() = v2.back() + v2.front();
+				const Tile * tile1 = tempSolution[i];
+				const Tile * tile2 = tempSolution[i + 1];
 
-				if (dare < v1.back() || v1.back() < down)
+				double deltaX = tile1->getXCoordinate() - tile2->getXCoordinate();
+				double deltaY = tile1->getYCoordinate() - tile2->getYCoordinate();
+
+				double distance = sqrt((deltaX * deltaX) + (deltaY * deltaY));
+
+				double studentTileDistance = distance - .0001f; // Making sure we take into account of floatation error
+
+				double actualTtileDistance = tile_map_.getTileRadius() * 2;
+				if (studentTileDistance > actualTtileDistance)
 				{
 					MessageBox(NULL, _T("A node is not next to its parent!"),
 						_T("Solution Checker"), MB_OK);
 				}
+				i++;
 			}
 		}
 		else/* if(!mybTimeSearch) *///!done
@@ -2656,6 +2671,28 @@ void PathPlannerLab::paintTileGrid(HDC device_context_handle) const
 	DeleteDC(buffer_context_handle);
 }
 
+
+
+void BindStdHandlesToConsole()
+{
+	// Redirect the CRT standard input, output, and error handles to the console
+	freopen("CONIN$", "r", stdin);
+	freopen("CONOUT$", "w", stdout);
+	freopen("CONOUT$", "w", stderr);
+
+	//Clear the error state for each of the C++ standard stream objects. We need to do this, as
+	//attempts to access the standard streams before they refer to a valid target will cause the
+	//iostream objects to enter an error state. In versions of Visual Studio after 2005, this seems
+	//to always occur during startup regardless of whether anything has been read from or written to
+	//the console or not.
+	std::wcout.clear();
+	std::cout.clear();
+	std::wcerr.clear();
+	std::cerr.clear();
+	std::wcin.clear();
+	std::cin.clear();
+}
+
 int APIENTRY _tWinMain(HINSTANCE application_handle,
                        HINSTANCE previous_application_handle,
                        LPTSTR    command_line,
@@ -2673,21 +2710,25 @@ int APIENTRY _tWinMain(HINSTANCE application_handle,
 	coninfo.dwSize.Y = 500;
 	SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coninfo.dwSize);
 
-	// Redirect standard output to the console window.
-	HANDLE standard_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	int console_handle = _open_osfhandle(reinterpret_cast<intptr_t>(standard_handle), _O_TEXT);
+	//// Redirect standard output to the console window.
+	//HANDLE standard_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	//int console_handle = _open_osfhandle(reinterpret_cast<intptr_t>(standard_handle), _O_TEXT);
 
-	*stdout = *_fdopen(console_handle, "w");
-	setvbuf(stdout, 0, _IONBF, 0);
+	//*stdout = *_fdopen(console_handle, "w");
+	//setvbuf(stdout, 0, _IONBF, 0);
 
-	// Redirect standard error to the console window.
-	standard_handle = GetStdHandle(STD_ERROR_HANDLE);
-	console_handle = _open_osfhandle(reinterpret_cast<intptr_t>(standard_handle), _O_TEXT);
-	*stderr = *_fdopen(console_handle, "w");
-	setvbuf(stderr, 0, _IONBF, 0);
+	//// Redirect standard error to the console window.
+	//standard_handle = GetStdHandle(STD_ERROR_HANDLE);
+	//console_handle = _open_osfhandle(reinterpret_cast<intptr_t>(standard_handle), _O_TEXT);
+	//*stderr = *_fdopen(console_handle, "w");
+	//setvbuf(stderr, 0, _IONBF, 0);
 
-	// Allow C++ code to benefit from console redirection.
-	ios::sync_with_stdio();
+	//// Allow C++ code to benefit from console redirection.
+	//ios::sync_with_stdio(false);
+
+
+	BindStdHandlesToConsole();
+
 //#endif
 
 	// Perform application initialization:

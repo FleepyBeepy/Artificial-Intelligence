@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using Microsoft.DirectX.Direct3D;
-using Microsoft.DirectX;
+using System.Drawing;
 
 using FullSailAFI.SteeringBehaviors.Core;
 using FullSailAFI.SteeringBehaviors.ExampleAI;
@@ -11,7 +10,7 @@ namespace FullSailAFI.SteeringBehaviors
     {
        
         #region Properties
-        public ColorValue Color { get; set; }
+        public Color Color { get; set; }
         #endregion
 
         #region Constructors
@@ -108,8 +107,8 @@ namespace FullSailAFI.SteeringBehaviors
 
         public override string ToString()
         {
-            return "Task Force of " + Boids.Count + " ships. Color {A:" + Color.Alpha.ToString("F") + " R:" + Color.Red.ToString("F") +
-                " G:" + Color.Green.ToString("F") + " B:" + Color.Blue.ToString("F") + "}";
+            return "Task Force of " + Boids.Count + " ships. Color {A:" + Color.A.ToString() + " R:" + Color.R.ToString() +
+                " G:" + Color.G.ToString() + " B:" + Color.B.ToString() + "}";
         }
 
         #endregion

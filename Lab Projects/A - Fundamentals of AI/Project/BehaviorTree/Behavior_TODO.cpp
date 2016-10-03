@@ -32,13 +32,13 @@ namespace fullsail_ai { namespace fundamentals {
 		return description;
 	}
 
-	// DO NOT Change this function, it is supposed to just return false
+	// DO NOT edit this function, it is supposed to just return false
 	bool Behavior::isLeaf() const
 	{
 		return false;
 	}
 
-	//! \todo
+	//! \TODO
 	//!   - Implement the <code>Behavior</code> methods.
 
 

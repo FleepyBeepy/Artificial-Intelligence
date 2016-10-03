@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.DirectX;
 using FullSailAFI.SteeringBehaviors.Core;
 
 namespace FullSailAFI.SteeringBehaviors.StudentAI

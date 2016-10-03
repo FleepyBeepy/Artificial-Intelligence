@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using FullSailAFI.SteeringBehaviors.Core;
-using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
 
 namespace FullSailAFI.SteeringBehaviors.ApplicationPresentation
 {
@@ -25,14 +24,13 @@ namespace FullSailAFI.SteeringBehaviors.ApplicationPresentation
         Random rng;
         List<ITaskForce> taskForces;
 
-        #region Managed DirectX stuff
+        #region Rendering stuff
 
-        bool deviceLost;
-        Device device;
-        PresentParameters presentationParameters;
-        Sprite sprite;
-        Texture backgroundTexture;
-        Texture shipTexture;
+        Graphics renderControlGraphics;
+        Graphics backbufferGraphics;
+        Bitmap backbuffer;
+        Bitmap backgroundTexture;
+        Bitmap shipTexture;
 
         #endregion
 
@@ -41,7 +39,7 @@ namespace FullSailAFI.SteeringBehaviors.ApplicationPresentation
         public Main()
         {
             InitializeComponent();
-            InitializeDirectX();
+            InitializeResources();
             deltaTimeAccumulator = 0;
             taskForces = new List<ITaskForce>(5);
             rng = new Random();
@@ -54,123 +52,55 @@ namespace FullSailAFI.SteeringBehaviors.ApplicationPresentation
             separationWeightSelector.Enabled = false;
         }
 
-        private void InitializeDirectX()
+        private void InitializeResources()
         {
-            // TODO: init directx stuff
-            presentationParameters = new PresentParameters();
-            presentationParameters.Windowed = true;
-            presentationParameters.BackBufferWidth = renderControl.Width;
-            presentationParameters.BackBufferHeight = renderControl.Height;
-            presentationParameters.BackBufferFormat = Format.A8R8G8B8;
-            presentationParameters.SwapEffect = SwapEffect.Discard;
-            presentationParameters.PresentationInterval = PresentInterval.One;
-
-            deviceLost = false;
-            device = new Device(0, DeviceType.Hardware, renderControl, 
-                CreateFlags.HardwareVertexProcessing, presentationParameters);
-            device.DeviceLost += new EventHandler(device_DeviceLost);
-            sprite = new Sprite(device);
-            backgroundTexture = TextureLoader.FromFile(device, "ApplicationPresentation/spacefield.png");
-            shipTexture = TextureLoader.FromFile(device, "ApplicationPresentation/ship.png");
-        }
-
-        private void RecoverDevice()
-        {
-            try
-            {
-                device.TestCooperativeLevel();
-            }
-            catch (DeviceLostException)
-            {
-                // Failed big time, so just wait a bit before
-                // trying again
-            }
-            catch (DeviceNotResetException)
-            {
-                try
-                {
-                    device.Reset(presentationParameters);
-                    deviceLost = false;
-                }
-                catch (DeviceLostException)
-                {
-                    // Failed big time, so just wait a bit before
-                    // trying again
-                }
-            }
-        }
-
-        private void device_DeviceLost(object sender, EventArgs e)
-        {
-            //if (null != backgroundTexture)
-            //    backgroundTexture.Dispose();
-            //if (null != shipTexture)
-            //    shipTexture.Dispose();
+            backgroundTexture = new Bitmap("ApplicationPresentation/spacefield.png");
+            shipTexture = new Bitmap("ApplicationPresentation/ship.png");
+            backbuffer = new Bitmap(renderControl.Width, renderControl.Height, PixelFormat.Format32bppArgb);
+            backbufferGraphics = Graphics.FromImage(backbuffer);
+            renderControlGraphics = renderControl.CreateGraphics();
         }
 
         public void Render()
         {
-            // If the device is empty or lost, don't bother rendering
-            if (device == null || sprite == null)
-                return;
-            if (deviceLost)
-                RecoverDevice();
-            if (deviceLost)
-                return;
-
-            try
+            lock (this)
             {
-                lock (this)
+                backbufferGraphics.ResetTransform();
+                backbufferGraphics.DrawImageUnscaled(backgroundTexture, Point.Empty);
+
+                foreach (ITaskForce tf in taskForces)
                 {
-                    device.BeginScene();
-                    //device.Clear(ClearFlags.Target, Color.CornflowerBlue, 0, 0);
-                    sprite.Begin(SpriteFlags.AlphaBlend);
-
-                    sprite.Transform = Matrix.Identity;
-
-                    sprite.Draw(backgroundTexture, Vector3.Empty,
-                        Vector3.Empty, ColorValue.FromColor(Color.White).ToArgb());
-
-                    foreach (ITaskForce tf in taskForces)
+                    float[][] matrix = {   new float[] {tf.Color.R / 255f, 0, 0, 0, 0},
+                                               new float[] {0, tf.Color.G / 255f, 0, 0, 0},
+                                               new float[] {0, 0, tf.Color.B / 255f, 0, 0},
+                                               new float[] {0, 0, 0, 1, 0},
+                                               new float[] {0, 0, 0, 0, 1}};
+                    ColorMatrix modulation = new ColorMatrix(matrix);
+                    ImageAttributes imgAtt = new ImageAttributes();
+                    imgAtt.SetColorMatrix(modulation);
+                    foreach (MovingObject ship in tf.Boids)
                     {
-                        foreach (MovingObject ship in tf.Boids)
-                        {
-                            // set up matricies to determine where to render
-                            Matrix transform = new Matrix();
-                            transform = Matrix.Identity;
+                        // set up matricies to determine where to render
+                        backbufferGraphics.ResetTransform();
 
-                            //// compute scaling in x and y axis
-                            //float x = Convert.ToSingle(bobject.Dimensions.Width) / Convert.ToSingle(bobject.ImageDimensions.Width) * GlobalScale,
-                            //    y = Convert.ToSingle(bobject.Dimensions.Height) / Convert.ToSingle(bobject.ImageDimensions.Height) * GlobalScale;
+                        //graphics.TranslateTransform(shipTexture.Width >> 1, shipTexture.Height >> 1, System.Drawing.Drawing2D.MatrixOrder.Append);
 
-                            //// setup scaling matrix and
-                            //// apply scaling to transform
-                            //transform.Multiply(Matrix.Scaling(new Vector3(x, y, 1)));
+                        // setup rotation matrix and
+                        backbufferGraphics.RotateTransform((ship.Heading) * 180f / Convert.ToSingle(Math.PI), System.Drawing.Drawing2D.MatrixOrder.Append);
 
-                            // setup rotation matrix and
-                            // apply rotation to transform
-                            transform.Multiply(Matrix.RotationZ(ship.Heading));
+                        // setup translate matrix and
+                        // apply translation to transform
+                        backbufferGraphics.TranslateTransform(ship.Position.X, ship.Position.Y, System.Drawing.Drawing2D.MatrixOrder.Append);
+                        //graphics.DrawImageUnscaledAndClipped(shipTexture, new Rectangle(new Point(20,20), shipTexture.Size));
 
-                            // setup translate matrix and
-                            // apply translation to transform
-                            transform.Multiply(Matrix.Translation(ship.Position));
-
-                            // apply transform to sprite object
-                            sprite.Transform = transform;
-
-                            sprite.Draw(shipTexture, new Vector3(ship.CollisionRadius, ship.CollisionRadius, 0),
-                                Vector3.Empty, tf.Color.ToArgb());
-                        }
+                        backbufferGraphics.DrawImage(shipTexture, new Rectangle(-shipTexture.Width >> 1, -shipTexture.Height >> 1, shipTexture.Width, shipTexture.Height),
+                            0, 0, shipTexture.Width, shipTexture.Height, GraphicsUnit.Pixel, imgAtt);
                     }
-
-                    sprite.End();
-                    device.EndScene();
-                    device.Present();
                 }
-            }
-            catch (DeviceLostException)
-            {
-                deviceLost = true;
+
+                //present the backbuffer
+                renderControlGraphics.DrawImageUnscaled(backbuffer, Point.Empty);
+
             }
 
             // increment the frame counter for FPS display
@@ -301,7 +231,7 @@ namespace FullSailAFI.SteeringBehaviors.ApplicationPresentation
             {
                 renderControl.Enabled = false;
                 cd.ShowDialog(this);
-                tf.Color = ColorValue.FromColor(cd.Color);
+                tf.Color = cd.Color;
                 renderControl.Enabled = true;
             }
             taskForceSelector.Items[taskForceSelector.SelectedIndex] = tf.ToString();
@@ -358,7 +288,7 @@ namespace FullSailAFI.SteeringBehaviors.ApplicationPresentation
                 if (fullSailImplementationButton.Checked)
                 {
                     List<ITaskForce> copy = new List<ITaskForce>(taskForces.Count);
-                    for(int i = 0; i < taskForces.Count; ++i)
+                    for (int i = 0; i < taskForces.Count; ++i)
                     {
                         ITaskForce tf = new ExampleTaskForce();
                         tf.CopyFrom(taskForces[i]);
@@ -376,21 +306,6 @@ namespace FullSailAFI.SteeringBehaviors.ApplicationPresentation
                         copy.Add(tf);
                     }
                     taskForces = copy;
-                }
-            }
-        }
-
-        private void enableVSyncButton_CheckedChanged(object sender, EventArgs e)
-        {
-            lock (this)
-            {
-                if (null != device)
-                {
-                    if (enableVSyncButton.Checked)
-                        presentationParameters.PresentationInterval = PresentInterval.One;
-                    else
-                        presentationParameters.PresentationInterval = PresentInterval.Immediate;
-                    device.Reset(presentationParameters);
                 }
             }
         }
