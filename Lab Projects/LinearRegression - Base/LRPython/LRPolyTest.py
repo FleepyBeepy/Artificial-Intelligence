@@ -21,37 +21,37 @@ def main():
     testInput = [5, 25, 125]
 
     #test initial heuristic prediction result
-    print "Current prediction for input:"
-    print testInput
-    print "Y = %f" %LR.predict(testInput)
-    print "Expected value of 466.0\n"
+    print("Current prediction for input:")
+    print(testInput)
+    print("Y = %f" %LR.predict(testInput))
+    print("Expected value of 466.0\n")
 
     #test initial trainning cost calculation
-    print "Initial trainning cost = %f" %LR.currentTrainningCost()
-    print "Expected value of 631.631836\n"
+    print("Initial trainning cost = %f" %LR.currentTrainningCost())
+    print("Expected value of 631.631836\n")
 
     #test initial test cost calculation
-    print "Initial test cost = %f" %LR.currentTestCost()
-    print "Expected value of 647.173584\n"
+    print("Initial test cost = %f" %LR.currentTestCost())
+    print("Expected value of 647.173584\n")
 
     #test gradient descent
-    print "Running gradient descent %d times" %LR.numIterations
+    print("Running gradient descent %d times" %LR.numIterations)
     elapsedTime = LR.runGradient()
-    print "... took %f seconds\n." %elapsedTime
+    print("... took %f seconds\n." %elapsedTime)
 
     #test resulting heuristic prediction result
-    print "Current prediction for input:"
-    print testInput
-    print "Y = %f" %LR.predict(testInput)
-    print "Expected value of -100.401848\n"
+    print("Current prediction for input:")
+    print(testInput)
+    print("Y = %f" %LR.predict(testInput))
+    print("Expected value of -100.401848\n")
 
     #test resulting trainning cost calculation
-    print "Current trainning cost = %f" %LR.currentTrainningCost()
-    print "Expected value of 2.208094\n"
+    print("Current trainning cost = %f" %LR.currentTrainningCost())
+    print("Expected value of 2.208094\n")
 
     #test resulting test cost calculation
-    print "Current test cost = %f" %LR.currentTestCost()
-    print "Expected value of 5.201693\n"
+    print("Current test cost = %f" %LR.currentTestCost())
+    print("Expected value of 5.201693\n")
 
 ## end main
 

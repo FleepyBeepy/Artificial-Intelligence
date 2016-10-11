@@ -8,7 +8,7 @@ def polynomialPrint():
 
     for pIndex in range(1, polynomial):
         string += " + %f * x^%d" %(inputWeights[pIndex]/pow(10, pIndex), pIndex+1)
-    print string
+    print(string)
 ##end polynomialPrint
 
 def predict(testInput):
@@ -25,14 +25,14 @@ def linearCallback(iterations):
     testHistDS.data["x"] = []
     testHistDS.data["y"] = []
 
-    print "Performing gradient descent for %d iterations with a "\
+    print( "Performing gradient descent for %d iterations with a "\
             "learning rate of %lg and regularization rate of %lg" %(iterations, alpha,
-                                                                 lambdaVal)
+                                                                 lambdaVal))
     start_time = time.clock()
     bias = Regression.linearGradientDescent(alpha, lambdaVal, iterations,
                                 trainningFeatures, trainningLabels, inputWeights, bias);
     elapsed = time.clock() - start_time
-    print "Performing gradient descent for %d iterations took %f seconds" %(iterations, elapsed)
+    print("Performing gradient descent for %d iterations took %f seconds" %(iterations, elapsed))
 
     curTrainCost = Regression.linearCost(trainningFeatures, trainningLabels, inputWeights, 
                                     bias, 0)
@@ -43,8 +43,8 @@ def linearCallback(iterations):
     testCostHistory.append(curTestCost)
 
     polynomialPrint()
-    print "Current trainning cost = %f\n" %curTrainCost
-    print "Current test cost = %f\n" %curTestCost
+    print("Current trainning cost = %f\n" %curTrainCost)
+    print("Current test cost = %f\n" %curTestCost)
     
     BRP.updateLinearRegPlot(ds, xDataRange, inputWeights, bias)
     BRP.updateCostHistoryPlot(trainHistDS, testHistDS, numGradIterations, 
@@ -56,11 +56,11 @@ def linearCallbackLarge():
 ##end linearCallbackLarge
 
 def linearCallbackMedium():
-    linearCallback(numIterations/10)
+    linearCallback(int(numIterations/10))
 ##end linearCallbackLarge
 
 def linearCallbackSmall():
-    linearCallback(numIterations/100)
+    linearCallback(int(numIterations/100))
 ##end linearCallbackLarge
 
 def currentTrainningCostRegularized():
@@ -174,13 +174,13 @@ def run():
                                     bias, lambdaVal)
 
     trainCostHistory = [curCost]
-    print "Current trainning cost = %f" %curCost
+    print("Current trainning cost = %f" %curCost)
 
     curCost = Regression.linearCost(testFeatures, testLabels, inputWeights, 
                                     bias, 0)
 
     testCostHistory = [curCost]
-    print "Current testing cost = %f" %curCost
+    print("Current testing cost = %f" %curCost)
 
     numGradIterations = [0]
 
