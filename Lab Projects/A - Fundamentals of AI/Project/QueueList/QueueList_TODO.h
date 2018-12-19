@@ -19,12 +19,14 @@ namespace fullsail_ai { namespace fundamentals {
 	typename QueueList<T>::Iterator& QueueList<T>::Iterator::operator++()
 	{
 		// TODO: Complete the definition of this operator.
+		return *this;
 	}
 
 	template <typename T>
 	T QueueList<T>::Iterator::operator*() const
 	{
 		// TODO: Complete the definition of this operator.
+
 	}
 
 
