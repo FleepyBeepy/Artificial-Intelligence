@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <deque>
 #include <map>
+#include <shobjidl_core.h>
 #include <functional>
 #include "PathPlannerUtility.h"
 #include "PathPlannerLab.h"
@@ -232,20 +233,20 @@ PathPlannerInterface::~PathPlannerInterface()
 
 BOOL PathPlannerInterface::shouldEnableSetStart() const
 {
-	return FALSE;
+	return TRUE;
 }
 
-bool PathPlannerInterface::updateStart()
+bool PathPlannerInterface::updateStart(int row, int col)
 {
 	return false;
 }
 
 BOOL PathPlannerInterface::shouldEnableSetGoal() const
 {
-	return FALSE;
+	return TRUE;
 }
 
-bool PathPlannerInterface::updateGoal()
+bool PathPlannerInterface::updateGoal(int row, int col)
 {
 	return false;
 }
@@ -965,6 +966,23 @@ void GroundUpPathPlanner::beginRedrawSearchProgress(POINT const& offset, int wid
 	drawGrid(tile_map_, offset, width, height, device_context_handle);
 }
 
+bool GroundUpPathPlanner::updateStart(int row, int col)
+{
+	this->start_column_ = col;
+	this->start_row_ = row;
+	this->start_tile_ = this->tile_map_.getTile(start_row_, start_column_);
+	return true;
+}
+
+bool GroundUpPathPlanner::updateGoal(int row, int col)
+{
+
+	this->goal_column_ = col;
+	this->goal_row_ = row;
+	this->goal_tile_ = this->tile_map_.getTile(goal_row_, goal_column_);
+	return true;
+}
+
 BOOL onOkCancelCommand(HWND dialog_handle, WPARAM w_param)
 {
 	switch (LOWORD(w_param))
@@ -1030,6 +1048,132 @@ LRESULT CALLBACK windowProcedure(HWND window_handle, UINT message, WPARAM w_para
 					break;
 				}
 
+				case ID_LOAD_TEST0:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex035x035.txt"), 31, 19, 3, 15);
+					break;
+				}
+				case ID_LOAD_TEST1:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex035x035.txt"), 0, 9, 34, 26);
+					break;
+				}
+				case ID_LOAD_TEST2:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex035x035.txt"), 2, 19, 31, 19);
+					break;
+				}
+				case ID_LOAD_TEST3:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex035x035.txt"), 17, 32, 17, 2);
+					break;
+				}
+				case ID_LOAD_TEST4:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex035x035.txt"), 32, 32, 6, 0);
+					break;
+				}
+				case ID_LOAD_TEST5:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex035x035.txt"), 17, 3, 17, 31);
+					break;
+				}
+				case ID_LOAD_TEST6:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex054x045.txt"), 44, 53, 3, 51);
+					break;
+				}
+				case ID_LOAD_TEST7:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex054x045.txt"), 30, 53, 30, 0);
+					break;
+				}
+				case ID_LOAD_TEST8:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex054x045.txt"), 22, 0, 22, 53);
+					break;
+				}
+				case ID_LOAD_TEST9:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex054x045.txt"), 3, 51, 42, 53);
+					break;
+				}
+				case ID_LOAD_TEST10:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex054x045.txt"), 8, 0, 34, 53);
+					break;
+				}
+				case ID_LOAD_TEST11:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex054x045.txt"), 22, 51, 22, 53);
+					break;
+				}
+				case ID_LOAD_TEST12:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex054x045.txt"), 2, 51, 44, 53);
+					break;
+				}
+				case ID_LOAD_TEST13:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex098x098.txt"), 97, 97, 0, 0);
+					break;
+				}
+				case ID_LOAD_TEST14:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex098x098.txt"), 38, 44, 97, 0);
+					break;
+				}
+				case ID_LOAD_TEST15:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex098x098.txt"), 3, 51, 90, 40);
+					break;
+				}
+				case ID_LOAD_TEST16:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex098x098.txt"), 52, 0, 53, 97);
+					break;
+				}
+				case ID_LOAD_TEST17:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex098x098.txt"), 50, 7, 41, 97);
+					break;
+				}
+				case ID_LOAD_TEST18:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex098x098.txt"), 93, 0, 53, 80);
+					break;
+				}
+				case ID_LOAD_TEST19:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex098x098.txt"), 5, 92, 69, 52);
+					break;
+				}
+				case ID_LOAD_TEST20:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex113x083.txt"), 82, 112, 0, 0);
+					break;
+				}
+				case ID_LOAD_TEST21:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex113x083.txt"), 0, 16, 82, 97);
+					break;
+				}
+				case ID_LOAD_TEST22:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex113x083.txt"), 14, 0, 70, 112);
+					break;
+				}
+				case ID_LOAD_TEST23:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex113x083.txt"), 81, 73, 1, 15);
+					break;
+				}
+				case ID_LOAD_TEST24:
+				{
+					PathPlannerLab::getInstance()->onLoadTest(window_handle, _T("./Data/hex113x083.txt"), 41, 3, 41, 109);
+					break;
+				}
+
 				case IDM_PATHPLANNER_RESET:
 				{
 					PathPlannerLab::getInstance()->onReset();
@@ -1065,6 +1209,8 @@ LRESULT CALLBACK windowProcedure(HWND window_handle, UINT message, WPARAM w_para
 					PathPlannerLab::getInstance()->onTimeRun();
 					break;
 				}
+
+
 			}
 
 			break;
@@ -1405,6 +1551,8 @@ void PathPlannerLab::openFile_(HWND window_handle, TCHAR* file_name)
 #else
 	basic_ifstream<TCHAR> input_file_stream(file_name);
 #endif
+	wchar_t cwd[512];
+	_tgetcwd(cwd, 512);
 
 	if (input_file_stream.good())
 	{
@@ -1455,7 +1603,7 @@ void PathPlannerLab::openFile_(HWND window_handle, TCHAR* file_name)
 			tile_map_width_ = tile_map_height_ = 0;
 		}
 
-		planner_sync_.release();
+		
 		showRunStopped_();
 		updateButtons_();
 
@@ -1468,6 +1616,7 @@ void PathPlannerLab::openFile_(HWND window_handle, TCHAR* file_name)
 		updateTileGrid_();
 		input_file_stream.close();
 		input_file_stream.clear();
+		planner_sync_.release();
 	}
 }
 
@@ -2047,6 +2196,7 @@ void PathPlannerLab::onSetStart()
 	{
 		planner_sync_.release();
 		InvalidateRect(tile_grid_handle_, 0, FALSE);
+		InvalidateRect(parameter_list_view_handle_, 0, FALSE);
 	}
 	else
 	{
@@ -2062,6 +2212,7 @@ void PathPlannerLab::onSetGoal()
 	{
 		planner_sync_.release();
 		InvalidateRect(tile_grid_handle_, 0, FALSE);
+		InvalidateRect(parameter_list_view_handle_, 0, FALSE);
 	}
 	else
 	{
@@ -2587,33 +2738,84 @@ void PathPlannerLab::onVScroll(HWND window_handle, WPARAM w_param, LPARAM l_para
 	}
 }
 
+void PathPlannerLab::onLoadTest(HWND window_handle, TCHAR* filename, int startRow, int startCol, int goalRow, int goalCol)
+{
+	openFile_(window_handle, filename);
+	InvalidateRect(tile_grid_handle_, 0, FALSE);
+	planner_sync_.acquire();
+	current_planner_->updateStart(startRow, startCol);
+	current_planner_->updateGoal(goalRow, goalCol);
+	planner_sync_.release();
+	InvalidateRect(tile_grid_handle_, 0, FALSE);
+	InvalidateRect(parameter_list_view_handle_, 0, FALSE);
+
+}
+
 void PathPlannerLab::onFileOpen(HWND window_handle)
 {
-	OPENFILENAME open_file_name;
-	TCHAR        file_name[MAX_BUFFER_SIZE];
-	TCHAR        initial_directory[MAX_BUFFER_SIZE];
+//	OPENFILENAME open_file_name;
+//	TCHAR        file_name[MAX_BUFFER_SIZE];
+////	TCHAR        initial_directory[MAX_BUFFER_SIZE];
+//
+//	ZeroMemory(&open_file_name, sizeof(open_file_name));
+//	open_file_name.lStructSize = sizeof(open_file_name);
+//	open_file_name.hwndOwner = window_handle;
+//	open_file_name.lpstrFile = file_name;
+//
+//	// Set lpstrFile[0] to '\0' so that GetOpenFileName does not 
+//	// use the contents of file_name to initialize itself.
+//	open_file_name.lpstrFile[0] = '\0';
+//	open_file_name.nMaxFile = sizeof(file_name);
+//	open_file_name.lpstrFilter = text_filter_;
+//	open_file_name.nFilterIndex = 1;
+//	open_file_name.lpstrFileTitle = 0;
+//	open_file_name.nMaxFileTitle = 0;
+////	open_file_name.lpstrInitialDir = initial_directory;
+////	_stprintf(initial_directory, _T("%s"), _T("./Data"));
+//	open_file_name.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+//
 
-	ZeroMemory(&open_file_name, sizeof(open_file_name));
-	open_file_name.lStructSize = sizeof(open_file_name);
-	open_file_name.hwndOwner = window_handle;
-	open_file_name.lpstrFile = file_name;
+	IFileDialog *pfd = nullptr;
+	HRESULT hr;
+	if(FAILED(hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd))))
+		return;
 
-	// Set lpstrFile[0] to '\0' so that GetOpenFileName does not 
-	// use the contents of file_name to initialize itself.
-	open_file_name.lpstrFile[0] = '\0';
-	open_file_name.nMaxFile = sizeof(file_name);
-	open_file_name.lpstrFilter = text_filter_;
-	open_file_name.nFilterIndex = 1;
-	open_file_name.lpstrFileTitle = 0;
-	open_file_name.nMaxFileTitle = 0;
-	open_file_name.lpstrInitialDir = initial_directory;
-	_stprintf(initial_directory, _T("%s"), _T("./Data"));
-	open_file_name.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+	DWORD dwFlags;
+		
+	if (FAILED(hr = pfd->GetOptions(&dwFlags)))
+		return;
 
-	if (GetOpenFileName(&open_file_name))
+	if (FAILED(hr = pfd->SetOptions(dwFlags | FOS_FORCEFILESYSTEM)))
+		return;
+
+	COMDLG_FILTERSPEC fileTypes [] =
 	{
-		openFile_(window_handle, file_name);
-	}
+		{ L"Text Document (*.txt)",       L"*.txt" },
+		{ L"All Documents (*.*)",         L"*.*" }
+	};
+
+	if (FAILED(hr = pfd->SetFileTypes(ARRAYSIZE(fileTypes), fileTypes)))
+		return;
+
+	if (FAILED(hr = pfd->SetFileTypeIndex(1)))
+		return;
+
+	if (FAILED(hr = pfd->SetDefaultExtension(L".txt")))
+		return;
+
+	if (FAILED(hr = pfd->Show(window_handle)))
+		return;
+
+	IShellItem *psiResult;
+	if (FAILED(hr = pfd->GetResult(&psiResult)))
+		return;
+
+	PWSTR pszFilePath = nullptr;
+	if (FAILED(hr = psiResult->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath)))
+		return;
+
+	//if (GetOpenFileName(&open_file_name))
+		openFile_(window_handle, pszFilePath);
 }
 
 void PathPlannerLab::doubleBufferTileGrid_(HDC device_context_handle,

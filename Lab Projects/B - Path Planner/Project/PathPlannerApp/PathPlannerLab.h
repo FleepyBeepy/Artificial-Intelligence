@@ -37,9 +37,7 @@
 #include <utility>
 #include <vector>
 #include "../PathSearch/PathSearch.h"
-#include "Resource.h"
-#include "../TileSystem/TileMap.h"
-
+#include "./Resource/resource.h"
 
 // VC7.1 thinks pre-incrementing inside a while condition is dangerous.
 #if _MSC_VER < 1400
@@ -146,7 +144,7 @@ struct PathPlannerInterface
 	//! \brief Updates the index of the start location.
 	//!
 	//! Override only when the search algorithm requires explicit locations as selectable items.
-	virtual bool updateStart();
+	virtual bool updateStart(int row = 0, int col = 0);
 
 	//! \brief Returns <code>TRUE</code> if the "Set Goal" button should be enabled,
 	//! <code>FALSE</code> otherwise.
@@ -157,7 +155,7 @@ struct PathPlannerInterface
 	//! \brief Updates the index of the goal location.
 	//!
 	//! Override only when the search algorithm requires explicit locations.
-	virtual bool updateGoal();
+	virtual bool updateGoal(int row = 0, int col = 0);
 
 	//! \brief Returns <code>true</code> if the user can press a key to initialize the search
 	//! algorithm, <code>false</code> otherwise.
@@ -271,6 +269,8 @@ public:
 	                           HDC device_context_handle) const;
 	void beginRedrawSearchProgress(POINT const& offset, int width, int height,
 	                               HDC device_context_handle) const;
+	bool updateStart(int row = 0, int col = 0);
+	bool updateGoal(int row = 0, int col = 0);
 };
 
 //! \brief Police concurrent accesses via critical sections.
@@ -419,6 +419,9 @@ public:
 
 	// Event handler for file opening.
 	void onFileOpen(HWND window_handle);
+
+	// Event handler for test loading.
+	void onLoadTest(HWND window_handle, TCHAR* filename, int startRow, int startCol, int goalRow, int goalCol);
 
 	// Event handler for rendering the path planner.
 	void paintTileGrid(HDC device_context_handle) const;

@@ -8,22 +8,22 @@
 #include <deque>
 #include <algorithm>
 
+
 namespace fullsail_ai {
 
 	//! \brief The open heap used by all cost-based search algorithms.
 	//!
 	//! This class template is basically a thin wrapper on top of both the <code>std::deque</code>
 	//! class template and the <a href="http://www.sgi.com/tech/stl/">STL</a> heap operations.
-	template <typename T>
+	template <typename T, class Comp>
 	class PriorityQueue
 	{
 		std::deque<T> open;
-		bool (*compare)(T const&, T const&);
 
 	public:
 		//! \brief Constructs a new <code>%PriorityQueue</code> that heap-sorts nodes
 		//! using the specified comparator.
-		explicit PriorityQueue(bool (*)(T const&, T const&));
+		explicit PriorityQueue();
 
 		//! \brief Returns <code>true</code> if the heap contains no nodes,
 		//! <code>false</code> otherwise.
@@ -74,55 +74,55 @@ namespace fullsail_ai {
 		void enumerate(std::vector<T>& sorted) const;
 	};
 
-	template <typename T>
-	PriorityQueue<T>::PriorityQueue(bool (*c)(T const&, T const&)) : open(), compare(c)
+	template <typename T, class Comp>
+	PriorityQueue<T, Comp>::PriorityQueue() : open()
 	{
 	}
 
-	template <typename T>
-	bool PriorityQueue<T>::empty() const
+	template <typename T, class Comp>
+	bool PriorityQueue<T, Comp>::empty() const
 	{
 		return open.empty();
 	}
 
-	template <typename T>
-	void PriorityQueue<T>::clear()
+	template <typename T, class Comp>
+	void PriorityQueue<T, Comp>::clear()
 	{
 		open.clear();
 	}
 
-	template <typename T>
-	std::size_t PriorityQueue<T>::size() const
+	template <typename T, class Comp>
+	std::size_t PriorityQueue<T, Comp>::size() const
 	{
 		return open.size();
 	}
 
-	template <typename T>
-	void PriorityQueue<T>::push(T const& node)
+	template <typename T, class Comp>
+	void PriorityQueue<T, Comp>::push(T const& node)
 	{
-		open.insert(std::upper_bound(open.begin(), open.end(), node, compare), node);
+		open.insert(std::upper_bound(open.begin(), open.end(), node, Comp()), node);
 	}
 
-	template <typename T>
-	T PriorityQueue<T>::front() const
+	template <typename T, class Comp>
+	T PriorityQueue<T, Comp>::front() const
 	{
 		return open.back();
 	}
 
-	template <typename T>
-	void PriorityQueue<T>::pop()
+	template <typename T, class Comp>
+	void PriorityQueue<T, Comp>::pop()
 	{
 		open.pop_back();
 	}
 
-	template <typename T>
-	void PriorityQueue<T>::remove(T const& node)
+	template <typename T, class Comp>
+	void PriorityQueue<T, Comp>::remove(T const& node)
 	{
 		open.erase(std::remove(open.begin(), open.end(), node), open.end());
 	}
 
-	template <typename T>
-	void PriorityQueue<T>::enumerate(std::vector<T>& sorted) const
+	template <typename T, class Comp>
+	void PriorityQueue<T, Comp>::enumerate(std::vector<T>& sorted) const
 	{
 		sorted.resize(open.size());
 		std::copy(open.begin(), open.end(), sorted.begin());

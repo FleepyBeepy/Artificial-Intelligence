@@ -21,6 +21,7 @@
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Resource\resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resource\goal.ico">
