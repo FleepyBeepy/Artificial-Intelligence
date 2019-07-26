@@ -1,6 +1,6 @@
 //! \file PathSearch.h
-//! \brief Defines the <code>fullsail_ai::algorithms::PathSearch</code> class interface.
-//! \author Cromwell D. Enage, 2009; Jeremiah Blanchard, 2012
+//! \brief Defines the fullsail_ai::algorithms::PathSearch class interface.
+//! \author Cromwell D. Enage, 2009; Jeremiah Blanchard, 2012; Matthew Tjarks 2017-2019
 #ifndef _FULLSAIL_AI_PATH_PLANNER_PATH_SEARCH_H_
 #define _FULLSAIL_AI_PATH_PLANNER_PATH_SEARCH_H_
 
@@ -23,15 +23,37 @@
 #define DEFAULT_GOAL_ROW ?
 #define DEFAULT_GOAL_COL ?
 
+#include <vector>
+#include <unordered_map>
 #include "../TileSystem/Tile.h"
 #include "../TileSystem/TileMap.h"
 #include "../platform.h"
-#include <vector>
+#include "../PriorityQueue.h"
 
 namespace fullsail_ai { namespace algorithms {
 
 	class PathSearch
 	{
+	private:
+		struct SearchNode
+		{
+			Tile* tile;
+			std::vector<SearchNode*> neighbors;
+		};
+
+		struct PlannerNode
+		{
+			SearchNode* searchNode;
+			PlannerNode* parent;
+
+			//TODO: Add cost variables for whichever search you are currently working on
+		};
+
+		std::unordered_map<Tile*, SearchNode*> nodes;
+		std::unordered_map<SearchNode*, PlannerNode*> visited;
+
+		//TODO: Add other supporting variables and functions
+
 	public:
 		//! \brief Default constructor.
 		DLLEXPORT PathSearch();
@@ -57,9 +79,9 @@ namespace fullsail_ai { namespace algorithms {
 		//! \param   goalColumn       the column where the goal tile is located.
 		DLLEXPORT void enter(int startRow, int startColumn, int goalRow, int goalColumn);
 
-		//! \brief Returns <code>true</code> if and only if no nodes are left open.
+		//! \brief Returns true if and only if no nodes are left open.
 		//!
-		//! \return  <code>true</code> if no nodes are left open, <code>false</code> otherwise.
+		//! \return true if no nodes are left open, false otherwise.
 		DLLEXPORT bool isDone() const;
 
 		//! \brief Performs the main part of the algorithm until the specified time has elapsed or
