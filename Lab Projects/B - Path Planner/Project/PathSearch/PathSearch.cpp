@@ -12,6 +12,7 @@ namespace fullsail_ai { namespace algorithms {
 
 	void PathSearch::initialize(TileMap* _tileMap)
 	{
+		tileMap = _tileMap;
 	}
 
 	void PathSearch::enter(int startRow, int startColumn, int goalRow, int goalColumn)

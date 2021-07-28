@@ -50,7 +50,7 @@ namespace FullSailAFI.GamePlaying
         private int Evaluate(Board _board)
         {
             //TODO: determine score based on position of pieces
-            throw new NotImplementedException();
+            return ExampleAI.MinimaxAFI.EvaluateTest(_board); // TEST WITH THIS FIRST, THEN IMPLEMENT YOUR OWN EVALUATE
         }
 
         #endregion

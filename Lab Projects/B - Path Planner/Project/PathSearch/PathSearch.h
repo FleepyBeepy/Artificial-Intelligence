@@ -52,6 +52,7 @@ namespace fullsail_ai { namespace algorithms {
 		std::unordered_map<Tile*, SearchNode*> nodes;
 		std::unordered_map<SearchNode*, PlannerNode*> visited;
 
+		TileMap* tileMap;
 		//TODO: Add other supporting variables and functions
 
 	public:

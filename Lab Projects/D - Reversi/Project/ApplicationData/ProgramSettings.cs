@@ -57,6 +57,8 @@ namespace FullSailAFI.GamePlaying
 		{
 			try
 			{
+                if (this.document.DocumentElement.SelectSingleNode(section + "/" + name) == null)
+                    return "";
 				return this.document.DocumentElement.SelectSingleNode(section + "/" + name).InnerText;
 			}
 			catch (Exception ex)
