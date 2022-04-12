@@ -19,6 +19,7 @@ namespace fullsail_ai { namespace fundamentals {
 	typename QueueList<T>::Iterator& QueueList<T>::Iterator::operator++()
 	{
 		// TODO: Complete the definition of this operator.
+		this->currentNode = this->currentNode->next;
 		return *this;
 	}
 
@@ -26,6 +27,7 @@ namespace fullsail_ai { namespace fundamentals {
 	T QueueList<T>::Iterator::operator*() const
 	{
 		// TODO: Complete the definition of this operator.
+		return currentNode->data;
 
 	}
 

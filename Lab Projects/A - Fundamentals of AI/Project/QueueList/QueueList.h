@@ -122,13 +122,31 @@ namespace fullsail_ai { namespace fundamentals {
 
 		//! \brief Returns an iterator pointing to the beginning of this <code>%QueueList</code>.
 		Iterator begin() const;
+		//{
+		//	Iterator beginning;
+		//	beginning->currentNode = this->front;
+		//	return beginning;
+		//}
 
 		//! \brief Returns an iterator pointing past the end of this <code>%QueueList</code>.
 		Iterator end() const;
+		/*{
+			Iterator ending;
+			ending->currentNode = this->back->next;
+			return ending;
+		}*/
 
 		//! \brief Returns <code>true</code> if this <code>%QueueList</code> does not contain any
 		//! elements, <code>false</code> otherwise.
-		bool isEmpty() const;
+		bool isEmpty() const
+		{
+			if (front == nullptr)
+			{
+				return true;
+			}
+
+			return false;
+		}
 
 		//! \brief Adds the specified element to this <code>%QueueList</code>.
 		//!
@@ -136,13 +154,31 @@ namespace fullsail_ai { namespace fundamentals {
 		//!
 		//! \post
 		//!   - <code>contains()</code> will return <code>true</code> if \a element is passed in.
-		void enqueue(T element);
+		void enqueue(T element)
+		{
+			if (isEmpty() == true)
+			{
+				Node* newNode = new Node(element);
+				back = newNode;
+				front = newNode;
+			}
+			else
+			{
+				Node* newNode = new Node(element);
+				back->next = newNode;
+				back = back->next;
+			}
+
+		}
 
 		//! \brief Returns the first element in this <code>%QueueList</code>.
 		//!
 		//! \pre
 		//!   - <code>isEmpty()</code> returns <code>false</code>.
-		T getFront() const;
+		T getFront() const
+		{
+			return front->data;
+		}
 
 		//! \brief Removes the first element from this <code>%QueueList</code>.
 		//!
@@ -151,24 +187,111 @@ namespace fullsail_ai { namespace fundamentals {
 		//! \post
 		//!   - <code>contains()</code> will return <code>false</code> if the removed element
 		//!     is passed in.
-		void dequeue();
+		void dequeue()
+		{
+			if (isEmpty())
+			{
+				return;
+			}
+			else
+			{
+				Node* deleteThis = front;
+				front = front->next;
+				delete deleteThis;
+			}
+		}
 
 		//! \brief Removes all elements from this <code>%QueueList</code>.
 		//!
 		//! \post
 		//!   - <code>isEmpty()</code> will return <code>true</code>.
-		void removeAll();
+		void removeAll()
+		{
+			if (isEmpty())
+			{
+				return;
+			}
+			else
+			{
+				while (front != nullptr)
+				{
+					Node* temp = front;
+					front = front->next;
+					delete temp;
+
+				}
+
+				back = nullptr;
+			}
+		}
 
 		//! \brief Returns <code>true</code> if this <code>%QueueList</code>
 		//! possesses the specified element, <code>false</code> otherwise.
-		bool contains(T element) const;
+		bool contains(T element) const
+		{
+			Node* currNode = front;
+
+			while (currNode != nullptr)
+			{
+				if (currNode->data == element)
+				{
+					return true;
+				}
+
+				currNode = currNode->next;
+			}
+
+			return false;
+		}
 
 		//! \brief Finds the first occurrence of the specified element and
 		//! removes it from the <code>%QueueList</code>.
 		//!
 		//! \pre
 		//!   - <code>isEmpty()</code> returns <code>false</code>.
-		void remove(T element);
+		void remove(T element)
+		{
+			Node* deleteThis = new Node(element);
+
+			if (contains(element))
+			{
+				if (front->data == element)
+				{
+					if (front->next == nullptr)
+					{
+						front = nullptr;
+						delete deleteThis;
+
+					}
+					else
+					{
+						front = front->next;
+						delete deleteThis;
+					}
+				}
+				else if (back->data == element)
+				{
+					delete deleteThis;
+				}
+				else
+				{
+					Node* current = front;
+					while (current != nullptr)
+					{
+						if (current->data == element)
+						{
+							delete deleteThis;
+						}
+						current = current->next;
+					}
+
+				}
+			}
+			else
+			{
+				return;
+			}
+		}
 	};
 
 	template <typename T>
